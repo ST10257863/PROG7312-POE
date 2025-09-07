@@ -7,10 +7,10 @@ namespace Municipality_Application.Models
     public class Issue
     {
         [Key]
-        public int Id { get; set; }
+        public Guid Id { get; set; } = Guid.NewGuid();
 
         [Required]
-        public DateTime ReportedAt { get; set; }
+        public DateTime ReportedAt { get; set; } = DateTime.UtcNow;
 
         [Required]
         public int CategoryId { get; set; }

@@ -6,10 +6,10 @@ namespace Municipality_Application.Models
     public class Attatchment
     {
         [Key]
-        public int Id { get; set; }
+        public Guid Id { get; set; } = Guid.NewGuid();
 
         [Required]
-        public int IssueId { get; set; }
+        public Guid IssueId { get; set; }
 
         [Required]
         public required string FileType { get; set; }
