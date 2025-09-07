@@ -1,0 +1,26 @@
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Municipality_Application.Models
+{
+    public class Attatchment
+    {
+        [Key]
+        public int Id { get; set; }
+
+        [Required]
+        public int IssueId { get; set; }
+
+        [Required]
+        public required string FileType { get; set; }
+
+        public long? FileSize { get; set; }
+
+        [Required]
+        public required string FilePath { get; set; }
+
+        // Navigation property
+        [ForeignKey("IssueId")]
+        public Issue Issue { get; set; } = null!;
+    }
+}

@@ -1,0 +1,49 @@
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Net.Mail;
+
+namespace Municipality_Application.Models
+{
+    public class Issue
+    {
+        [Key]
+        public int Id { get; set; }
+
+        [Required]
+        public DateTime ReportedAt { get; set; }
+
+        [Required]
+        public int CategoryId { get; set; }
+
+        [Required]
+        public required string Description { get; set; }
+
+        public ICollection<Attachment>? Attachments { get; set; }
+
+        public double? Latitude { get; set; }
+
+        public double? Longitude { get; set; }
+
+        public required string Address { get; set; }
+
+        public int? UserId { get; set; }
+
+        [Required]
+        public IssueStatus Status { get; set; } = IssueStatus.Reported;
+
+        // Navigation properties
+        [ForeignKey("CategoryId")]
+        public required Category Category { get; set; }
+
+        [ForeignKey("UserId")]
+        public User? User { get; set; }
+    }
+
+    public enum IssueStatus
+    {
+        Reported,
+        InProgress,
+        Resolved,
+        Closed
+    }
+}
