@@ -8,12 +8,4 @@
     <RootNamespace>Municipality_Application</RootNamespace>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.8" NoWarn="NU1605" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="9.0.8" NoWarn="NU1605" />
-    <PackageReference Include="Microsoft.Identity.Web" Version="3.14.0" />
-    <PackageReference Include="Microsoft.Identity.Web.UI" Version="3.14.0" />
-    <PackageReference Include="Microsoft.Identity.Web.DownstreamApi" Version="3.14.0" />
-  </ItemGroup>
-
 </Project>
