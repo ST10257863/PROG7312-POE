@@ -15,10 +15,17 @@ html {
 html {
   position: relative;
   min-height: 100%;
+
 }
 
 body {
-  margin-bottom: 60px;
+    /*margin-bottom: 60px;*/
+    display: flex;
+    flex-direction: column;
+}
+
+html, body {
+  height: 100%;
 }
 
 .form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
@@ -29,3 +36,49 @@ body {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
   text-align: start;
 }
+
+/*New Styles*/
+
+.container { 
+    flex: 1 0 auto; 
+}
+
+.footer {
+    flex-shrink: 0;
+    background-color: #f8f9fa;
+    border-top: 1px solid #dee2e6;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    margin-top: 2rem;
+}
+
+#dropzone {
+    border: 2px dashed #ccc;
+    border-radius: 4px;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+}
+
+    #dropzone:hover {
+        background-color: #f8f9fa;
+    }
+
+.card {
+    transition: transform 0.2s;
+}
+
+.card-hover:hover {
+    transform: translateY(-5px);
+}
+
+.btn-dark {
+    background-color: #333;
+    border-color: #333;
+}
+
+    .btn-dark:hover {
+        background-color: #000;
+        border-color: #000;
+    }
+

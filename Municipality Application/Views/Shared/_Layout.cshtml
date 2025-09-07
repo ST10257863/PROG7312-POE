@@ -3,17 +3,18 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Municipality_Application</title>
+    <title>@ViewData["Title"] - Municipal Connect</title>
     <script type="importmap"></script>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Municipality_Application.styles.css" asp-append-version="true" />
 </head>
-<body>
+<body class="d-flex flex-column">
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Municipality_Application</a>
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Municipal Connect</a>
+                
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -28,6 +29,10 @@
                         </li>
                     </ul>
                 </div>
+                <form class="navbar-nav flex-grow-1">
+                    <input class="form-control me-2" type="search" placeholder="Search services, departments, or information..." aria-label="Search">
+                    <button class="btn btn-outline-success" type="submit">Search</button>
+                </form>
             </div>
         </nav>
     </header>
@@ -37,14 +42,51 @@
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
+    <footer class="footer mt-auto py-3 bg-light">
         <div class="container">
-            &copy; 2025 - Municipality_Application - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            <div class="row">
+                <div class="col-md-4">
+                    <h5><i class="bi bi-building"></i> MunicipalConnect</h5>
+                    <p>Your gateway to municipal services and community engagement.</p>
+                    <div class="social-icons">
+                        <a href="#" class="text-muted me-2"><i class="bi bi-facebook"></i></a>
+                        <a href="#" class="text-muted me-2"><i class="bi bi-twitter"></i></a>
+                        <a href="#" class="text-muted"><i class="bi bi-instagram"></i></a>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <h5>Services</h5>
+                    <ul class="list-unstyled">
+                        <li><a asp-controller="Issue" asp-action="ReportIssue" class="text-muted">Report Issues</a></li>
+                        @* <li><a href="#" class="text-muted">Pay Bills</a></li>
+                        <li><a href="#" class="text-muted">Permits</a></li>
+                        <li><a href="#" class="text-muted">Public Records</a></li> *@
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h5>Contact</h5>
+                    <p><i class="bi bi-geo-alt"></i>Place Holder</p>
+                    <p><i class="bi bi-telephone"></i>Place Holder</p>
+                    <p><i class="bi bi-envelope"></i>Place Holder</p>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-md-6">
+                    &copy; 2025 MunicipalConnect. All rights reserved.
+                </div>
+                <div class="col-md-6 text-end">
+                    <a asp-controller="Home" asp-action="Privacy" class="text-muted me-2">Privacy Policy</a>
+                    @* <a href="#" class="text-muted me-2">Terms of Service</a>
+                    <a href="#" class="text-muted">Accessibility</a> *@
+                </div>
+            </div>
         </div>
     </footer>
+</body>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
-</body>
 </html>

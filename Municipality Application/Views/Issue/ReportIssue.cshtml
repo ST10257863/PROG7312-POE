@@ -1,0 +1,80 @@
+﻿@{
+    ViewData["Title"] = "Report Issue - MunicipalConnect";
+}
+
+<div class="container mt-4">
+    <h1 class="mb-4">Report an Issue</h1>
+    <form asp-action="ReportIssue" method="post" enctype="multipart/form-data">
+        <div class="mb-3">
+            <label for="location" class="form-label"><i class="bi bi-geo-alt"></i> Location</label>
+            <input type="text" class="form-control" id="location" name="location" placeholder="Enter street address, landmark, or area description" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="category" class="form-label"><i class="bi bi-list"></i> Issue Category</label>
+            <select class="form-select" id="category" name="category" required>
+                <option value="" selected disabled>Select a category</option>
+                <option value="roads">Roads</option>
+                <option value="water">Water</option>
+                <option value="electricity">Electricity</option>
+                <option value="sanitation">Sanitation</option>
+                <option value="other">Other</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label for="description" class="form-label"><i class="bi bi-file-text"></i> Issue Description</label>
+            <textarea class="form-control" id="description" name="description" rows="4" placeholder="Please provide detailed information about the issue, including when you first noticed it, how it affects you or the community, and any other relevant details..." required></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label for="files" class="form-label"><i class="bi bi-paperclip"></i> Attach Files (Optional)</label>
+            <div class="border rounded p-3 text-center" id="dropzone">
+                <input type="file" id="files" name="files" multiple class="d-none">
+                <p class="mb-0"><i class="bi bi-cloud-upload"></i> Click to upload or drag and drop</p>
+                <small class="text-muted">Photos, documents (Max 5MB each)</small>
+            </div>
+        </div>
+
+        <div class="d-grid gap-2">
+            <button type="submit" class="btn btn-primary"><i class="bi bi-send"></i> Submit Issue Report</button>
+            </div>
+    </form>
+
+    <div class="mt-4">
+        <h5><i class="bi bi-info-circle"></i> Reporting Tips</h5>
+        <ul class="list-unstyled">
+            <li><small>• Be as specific as possible with location details</small></li>
+            <li><small>• Include photos when possible for faster resolution</small></li>
+            <li><small>• You'll receive updates via email about your report status</small></li>
+            <li><small>• Emergency issues should be reported by calling 911</small></li>
+        </ul>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Add JavaScript for drag and drop functionality here
+        const dropzone = document.getElementById('dropzone');
+        const fileInput = document.getElementById('files');
+
+        dropzone.addEventListener('click', () => fileInput.click());
+
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropzone.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        dropzone.addEventListener('drop', handleDrop, false);
+
+        function handleDrop(e) {
+            let dt = e.dataTransfer;
+            let files = dt.files;
+            fileInput.files = files;
+        }
+    </script>
+}
