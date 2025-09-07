@@ -1,25 +1,7 @@
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc.Authorization;
-using Microsoft.Identity.Web;
-using Microsoft.Identity.Web.UI;
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-    .AddMicrosoftIdentityWebApp(builder.Configuration.GetSection("AzureAd"));
-
-builder.Services.AddControllersWithViews(options =>
-{
-    var policy = new AuthorizationPolicyBuilder()
-        .RequireAuthenticatedUser()
-        .Build();
-    options.Filters.Add(new AuthorizeFilter(policy));
-});
-builder.Services.AddRazorPages()
-    .AddMicrosoftIdentityUI();
+builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
@@ -32,15 +14,16 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseStaticFiles();
-
 app.UseRouting();
 
 app.UseAuthorization();
 
+app.MapStaticAssets();
+
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
-app.MapRazorPages();
+    pattern: "{controller=Home}/{action=Index}/{id?}")
+    .WithStaticAssets();
+
 
 app.Run();

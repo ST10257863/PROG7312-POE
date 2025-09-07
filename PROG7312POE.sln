@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.14.36401.2 d17.14
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Municipality Application", "Municipality Application\Municipality Application.csproj", "{19A1ABB4-94D2-4C80-B5AC-55DE5595F4CE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Municipality Application", "Municipality Application\Municipality Application.csproj", "{E92D09F9-C10B-4C5B-A196-1AC82449E7BD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,10 +11,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{19A1ABB4-94D2-4C80-B5AC-55DE5595F4CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{19A1ABB4-94D2-4C80-B5AC-55DE5595F4CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{19A1ABB4-94D2-4C80-B5AC-55DE5595F4CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{19A1ABB4-94D2-4C80-B5AC-55DE5595F4CE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E92D09F9-C10B-4C5B-A196-1AC82449E7BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E92D09F9-C10B-4C5B-A196-1AC82449E7BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E92D09F9-C10B-4C5B-A196-1AC82449E7BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E92D09F9-C10B-4C5B-A196-1AC82449E7BD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

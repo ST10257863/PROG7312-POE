@@ -4,7 +4,6 @@
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <UserSecretsId>aspnet-Municipality_Application-f841f3f1-fb56-4f78-acd6-880aaf2a14e9</UserSecretsId>
     <RootNamespace>Municipality_Application</RootNamespace>
   </PropertyGroup>
 

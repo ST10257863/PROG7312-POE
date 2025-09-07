@@ -1,11 +1,9 @@
 using System.Diagnostics;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Municipality_Application.Models;
 
 namespace Municipality_Application.Controllers
 {
-    [Authorize]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
@@ -25,7 +23,6 @@ namespace Municipality_Application.Controllers
             return View();
         }
 
-        [AllowAnonymous]
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
