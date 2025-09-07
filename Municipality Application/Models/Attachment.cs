@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Municipality_Application.Models
 {
-    public class Attatchment
+    public class Attachment
     {
         [Key]
         public Guid Id { get; set; } = Guid.NewGuid();
