@@ -129,3 +129,16 @@ body {
     #dropzone:hover {
         background-color: var(--secondary-color);
     }
+
+#file-list {
+    max-height: 150px;
+    overflow-y: auto;
+}
+
+    #file-list > div {
+        font-size: 0.9em;
+    }
+
+    #file-list .btn-outline-danger {
+        padding: 0.1rem 0.3rem;
+    }

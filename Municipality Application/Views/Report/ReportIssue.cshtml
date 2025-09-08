@@ -31,11 +31,13 @@
 
                 <div class="mb-3">
                     <label for="files" class="form-label"><i class="bi bi-paperclip"></i> Attach Files (Optional)</label>
-                    <div class="border rounded p-3 text-center" id="dropzone">
+                    <div class="border rounded p-3 text-center" id="dropzone" style="height: 140px; margin: auto;">
                         <input type="file" id="files" name="files" multiple class="d-none">
-                        <p class="mb-0"><i class="bi bi-cloud-upload"></i> Click to upload or drag and drop</p>
+                        <i class="bi bi-cloud-upload fs-1 mb-2"></i>
+                        <p class="mb-0">Click to upload or drag and drop</p>
                         <small class="text-muted">Photos, documents (Max 5MB each)</small>
                     </div>
+                    <div id="file-list" class="mt-2" style="min-height: 120px; max-height: 160px"></div>
                 </div>
 
                 <div class="d-grid gap-2">
@@ -59,11 +61,12 @@
     </div>
 </div>
 
+
 @section Scripts {
     <script>
-        // Add JavaScript for drag and drop functionality here
         const dropzone = document.getElementById('dropzone');
         const fileInput = document.getElementById('files');
+        const fileList = document.getElementById('file-list');
 
         dropzone.addEventListener('click', () => fileInput.click());
 
@@ -77,11 +80,60 @@
         }
 
         dropzone.addEventListener('drop', handleDrop, false);
+        fileInput.addEventListener('change', handleFileSelect, false);
 
         function handleDrop(e) {
             let dt = e.dataTransfer;
             let files = dt.files;
-            fileInput.files = files;
+            handleFiles(files);
+        }
+
+        function handleFileSelect(e) {
+            let files = e.target.files;
+            handleFiles(files);
+        }
+
+        function handleFiles(files) {
+            Array.from(files).forEach((file, index) => {
+                if (!fileAlreadyAdded(file)) {
+                    let fileSize = (file.size / 1024 / 1024).toFixed(2); // Convert to MB
+                    let fileItem = document.createElement('div');
+                    fileItem.className = 'd-flex justify-content-between align-items-center mb-1';
+                    fileItem.innerHTML = `
+                        <span><i class="bi bi-file-earmark"></i> ${file.name} (${fileSize} MB)</span>
+                        <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeFile('${file.name}')">
+                            <i class="bi bi-x"></i>
+                        </button>
+                    `;
+                    fileList.appendChild(fileItem);
+                }
+            });
+        }
+
+        function fileAlreadyAdded(file) {
+            return Array.from(fileList.children).some(item => item.textContent.includes(file.name));
+        }
+
+        function removeFile(fileName) {
+            let newFileList = Array.from(fileInput.files).filter(file => file.name !== fileName);
+            updateFileList(newFileList);
+
+            // Remove the file item from the display
+            let fileItems = fileList.children;
+            for (let i = 0; i < fileItems.length; i++) {
+                if (fileItems[i].textContent.includes(fileName)) {
+                    fileItems[i].remove();
+                    break;
+                }
+            }
+        }
+
+        function updateFileList(newFileList) {
+            let dataTransfer = new DataTransfer();
+            newFileList.forEach(file => {
+                dataTransfer.items.add(file);
+            });
+            fileInput.files = dataTransfer.files;
         }
     </script>
 }
