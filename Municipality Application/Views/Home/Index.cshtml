@@ -8,13 +8,14 @@
 
     <div class="row">
         <div class="col-md-4 mb-4">
-            <div class="card card-hover h-100">
-                <div class="card-body text-center">
-                    <i class="bi bi-exclamation-triangle fs-1 mb-3"></i>
-                    <h5 class="card-title">Report Issues</h5>
-                    <p class="card-text">Report potholes, broken streetlights, graffiti, and other municipal issues in your neighborhood.</p>
-                    <a asp-controller="Issue" asp-action="ReportIssue" class="btn btn-dark">Start Report</a>
-                </div>
+            <div class="card card-hover clickable-card h-100">
+                <a asp-controller="Issue" asp-action="ReportIssue" class="text-decoration-none text-dark">
+                    <div class="card-body text-center">
+                        <i class="bi bi-exclamation-triangle fs-1 mb-3"></i>
+                        <h5 class="card-title">Report Issues</h5>
+                        <p class="card-text">Report potholes, broken streetlights, graffiti, and other municipal issues in your neighborhood.</p>
+                    </div>
+                </a>
             </div>
         </div>
         <div class="col-md-4 mb-4">
