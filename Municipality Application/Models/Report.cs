@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Municipality_Application.Models
 {
-    public class Issue
+    public class Report
     {
         [Key]
         public Guid Id { get; set; } = Guid.NewGuid();
@@ -29,6 +29,12 @@ namespace Municipality_Application.Models
 
         [Required]
         public IssueStatus Status { get; set; } = IssueStatus.Reported;
+
+        [Phone]
+        public string? PhoneNumber { get; set; }
+
+        [EmailAddress]
+        public string? Email { get; set; }
 
         // Navigation properties
         [ForeignKey("CategoryId")]

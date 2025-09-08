@@ -7,7 +7,7 @@ namespace Municipality_Application.Data
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
-        public DbSet<Issue> Issues { get; set; }
+        public DbSet<Report> Issues { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Attachment> Attachments { get; set; }
         public DbSet<User> Users { get; set; }
@@ -17,17 +17,17 @@ namespace Municipality_Application.Data
             base.OnModelCreating(builder);
 
             // Relationships
-            builder.Entity<Issue>()
+            builder.Entity<Report>()
                 .HasOne(i => i.Category)
                 .WithMany(c => c.Issues)
                 .HasForeignKey(i => i.CategoryId);
 
-            builder.Entity<Issue>()
+            builder.Entity<Report>()
                 .HasMany(i => i.Attachments)
                 .WithOne(a => a.Issue)
                 .HasForeignKey(a => a.IssueId);
 
-            builder.Entity<Issue>()
+            builder.Entity<Report>()
                 .HasOne(i => i.User)
                 .WithMany()
                 .HasForeignKey(i => i.UserId)

@@ -17,6 +17,6 @@ namespace Municipality_Application.Models
         [ForeignKey("DepartmentId")]
         public Department? Department { get; set; }
 
-        public ICollection<Issue>? Issues { get; set; }
+        public ICollection<Report>? Issues { get; set; }
     }
 }

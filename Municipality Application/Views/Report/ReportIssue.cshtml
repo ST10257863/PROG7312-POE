@@ -30,6 +30,33 @@
                 </div>
 
                 <div class="mb-3">
+                    <p class="mb-2">Would you like to be notified of updates on this report?</p>
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="emailCheck" name="emailCheck">
+                        <label class="form-check-label" for="emailCheck">Notify me by email</label>
+                    </div>
+
+                    <div id="emailField" style="display: none;">
+                        <div class="mb-3">
+                            <label for="email" class="form-label"><i class="bi bi-envelope"></i> Email</label>
+                            <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email address">
+                        </div>
+                    </div>
+
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="phoneCheck" name="phoneCheck">
+                        <label class="form-check-label" for="phoneCheck">Notify me by phone</label>
+                    </div>
+                </div>
+
+                <div id="phoneField" style="display: none;">
+                    <div class="mb-3">
+                        <label for="phoneNumber" class="form-label"><i class="bi bi-telephone"></i> Phone Number</label>
+                        <input type="tel" class="form-control" id="phoneNumber" name="phoneNumber" placeholder="Enter your phone number">
+                    </div>
+                </div>
+
+                <div class="mb-3">
                     <label for="files" class="form-label"><i class="bi bi-paperclip"></i> Attach Files (Optional)</label>
                     <div class="border rounded p-3 text-center" id="dropzone" style="height: 140px; margin: auto;">
                         <input type="file" id="files" name="files" multiple class="d-none">
@@ -135,5 +162,34 @@
             });
             fileInput.files = dataTransfer.files;
         }
+
+        const emailCheck = document.getElementById('emailCheck');
+        const phoneCheck = document.getElementById('phoneCheck');
+        const emailField = document.getElementById('emailField');
+        const phoneField = document.getElementById('phoneField');
+        const emailInput = document.getElementById('email');
+        const phoneInput = document.getElementById('phoneNumber');
+        const form = document.querySelector('form');
+
+        emailCheck.addEventListener('change', function() {
+            emailField.style.display = this.checked ? 'block' : 'none';
+            emailInput.required = this.checked;
+        });
+
+        phoneCheck.addEventListener('change', function() {
+            phoneField.style.display = this.checked ? 'block' : 'none';
+            phoneInput.required = this.checked;
+        });
+
+        form.addEventListener('submit', function(e) {
+            if (emailCheck.checked && emailInput.value.trim() === '') {
+                e.preventDefault();
+                alert('Please enter your email address for notifications.');
+            }
+            if (phoneCheck.checked && phoneInput.value.trim() === '') {
+                e.preventDefault();
+                alert('Please enter your phone number for notifications.');
+            }
+        });
     </script>
 }

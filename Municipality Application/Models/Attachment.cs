@@ -21,6 +21,6 @@ namespace Municipality_Application.Models
 
         // Navigation property
         [ForeignKey("IssueId")]
-        public Issue Issue { get; set; } = null!;
+        public Report Issue { get; set; } = null!;
     }
 }
