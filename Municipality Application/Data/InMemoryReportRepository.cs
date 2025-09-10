@@ -18,6 +18,8 @@ namespace Municipality_Application.Data
 
         public Task<Report> AddReportAsync(Report report, List<IFormFile> files)
         {
+            const long MaxFileSize = 5 * 1024 * 1024; // 5MB
+
             if (report.Id == Guid.Empty)
             {
                 report.Id = Guid.NewGuid();
@@ -31,6 +33,11 @@ namespace Municipality_Application.Data
                 {
                     if (file.Length > 0)
                     {
+                        if (file.Length > MaxFileSize)
+                        {
+                            throw new Exception($"File '{file.FileName}' exceeds the 5MB size limit.");
+                        }
+
                         // Store file in memory as base64 string (simulate file storage)
                         using var ms = new MemoryStream();
                         file.CopyTo(ms);

@@ -38,7 +38,8 @@
                                 @foreach (var attachment in Model.Attachments)
                                 {
                                     <li>
-                                        <a href="@Url.Content(attachment.FilePath)" target="_blank">
+                                        @* <a href="@Url.Content(attachment.FilePath)" target="_blank"> *@
+                                        <a href="@Url.Content(attachment.FilePath)" download="@attachment.FileName">
                                             @attachment.FileName
                                         </a>
                                     </li>
