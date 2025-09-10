@@ -1,21 +1,24 @@
 ﻿using Municipality_Application.Interfaces;
 using Municipality_Application.Models;
-using Microsoft.AspNetCore.Http;
-using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Municipality_Application.Data
 {
     public class InMemoryReportRepository : IReportRepository
     {
+        // In-memory storage for reports and attachments.
         private readonly ConcurrentDictionary<Guid, Report> _reports = new ConcurrentDictionary<Guid, Report>();
         private readonly ConcurrentDictionary<Guid, List<Attachment>> _attachments = new ConcurrentDictionary<Guid, List<Attachment>>();
         private Queue<Guid> _reportQueue = new Queue<Guid>();
 
+        /// <summary>
+        /// Adds a new report and its attachments to the in-memory store.
+        /// Throws an exception if any file exceeds 5MB or if the report cannot be added.
+        /// </summary>
+        /// <param name="report">The report to add.</param>
+        /// <param name="files">List of files to attach to the report.</param>
+        /// <returns>The saved <see cref="Report"/>.</returns>
+        /// <exception cref="Exception">Thrown if a file exceeds the size limit or the report cannot be added.</exception>
         public Task<Report> AddReportAsync(Report report, List<IFormFile> files)
         {
             const long MaxFileSize = 5 * 1024 * 1024; // 5MB
@@ -75,6 +78,11 @@ namespace Municipality_Application.Data
             throw new Exception("Failed to add report");
         }
 
+        /// <summary>
+        /// Retrieves a report by its unique identifier, including its attachments.
+        /// </summary>
+        /// <param name="id">The report's unique identifier.</param>
+        /// <returns>The <see cref="Report"/> if found; otherwise, null.</returns>
         public Task<Report> GetReportByIdAsync(Guid id)
         {
             if (_reports.TryGetValue(id, out Report report))
@@ -94,6 +102,10 @@ namespace Municipality_Application.Data
             return Task.FromResult<Report>(null);
         }
 
+        /// <summary>
+        /// Retrieves all reports, including their attachments.
+        /// </summary>
+        /// <returns>An enumerable of all <see cref="Report"/> objects.</returns>
         public Task<IEnumerable<Report>> GetAllReportsAsync()
         {
             var reports = _reports.Values.ToList();
@@ -111,12 +123,16 @@ namespace Municipality_Application.Data
             return Task.FromResult(reports.AsEnumerable());
         }
 
+        /// <summary>
+        /// Updates an existing report and its attachments.
+        /// </summary>
+        /// <param name="report">The report to update.</param>
+        /// <returns>True if the update was successful; otherwise, false.</returns>
         public Task<bool> UpdateReportAsync(Report report)
         {
             if (_reports.TryGetValue(report.Id, out Report existingReport))
             {
-                // Update attachments
-                if (report.Attachments != null)
+                        if (report.Attachments != null)
                 {
                     foreach (var attachment in report.Attachments)
                     {
@@ -131,6 +147,11 @@ namespace Municipality_Application.Data
             return Task.FromResult(false);
         }
 
+        /// <summary>
+        /// Deletes a report and its attachments by report identifier.
+        /// </summary>
+        /// <param name="id">The report's unique identifier.</param>
+        /// <returns>True if the report was deleted; otherwise, false.</returns>
         public Task<bool> DeleteReportAsync(Guid id)
         {
             if (_reports.TryRemove(id, out _))

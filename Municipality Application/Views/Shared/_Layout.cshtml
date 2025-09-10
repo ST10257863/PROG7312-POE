@@ -9,38 +9,18 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Municipality_Application.styles.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
-
 </head>
 <body class="d-flex flex-column">
-
     <header>
         <nav class="navbar navbar-expand-sm navbar-light bg-primary">
             <div class="container-fluid">
-                @* <a class="navbar-brand text-white" asp-area="" asp-controller="Home" asp-action="Dashboard">
-                    <img src="~/images/logo.png" width="40" height="40" class="d-inline-block align-top">
-                    Municipal Connect
-                </a> *@
                 <a class="navbar-brand text-white" asp-area="" asp-controller="Home" asp-action="Dashboard">
                     <i class="bi bi-building fs-3 me-2"></i>
                     Municipal Connect
                 </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                @* <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-white" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white" asp-area="" asp-controller="Home" asp-action="Services">Services</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white" asp-area="" asp-controller="Home" asp-action="About">About</a>
-                        </li>
-                    </ul>
-                </div> *@
                 <form class="d-flex">
                     <input class="form-control me-2" type="search" placeholder="Search services..." aria-label="Search">
                     <button class="btn btn-outline-light" type="submit">Search</button>
@@ -48,13 +28,11 @@
             </div>
         </nav>
     </header>
-
     <div class="container mt-4">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
-
     <footer class="footer mt-auto py-3 bg-light">
         <div class="container">
             <div class="row">
@@ -71,8 +49,6 @@
                     <h5 class="text-primary">Quick Links</h5>
                     <ul class="list-unstyled">
                         <li><a asp-controller="Report" asp-action="ReportIssue" class="text-muted">Report Issues</a></li>
-                        @* <li><a asp-controller="Home" asp-action="Services" class="text-muted">Our Services</a></li> *@
-                        @* <li><a asp-controller="Home" asp-action="Contact" class="text-muted">Contact Us</a></li> *@
                     </ul>
                 </div>
                 <div class="col-md-4">
@@ -89,15 +65,13 @@
                 </div>
                 <div class="col-md-6 text-end">
                     <a asp-controller="Home" asp-action="Privacy" class="text-muted me-2">Privacy Policy</a>
-                    @* <a asp-controller="Home" asp-action="Terms" class="text-muted">Terms of Service</a> *@
                 </div>
             </div>
         </div>
     </footer>
-</body>
-
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
+</body>
 </html>
