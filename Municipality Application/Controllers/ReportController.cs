@@ -9,15 +9,19 @@ namespace Municipality_Application.Controllers
     /// </summary>
     public class ReportController : Controller
     {
+        private readonly IConfiguration _config;
         private readonly IReportRepository _reportRepository;
+        public string GoogleMapsApiKey { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ReportController"/> class.
         /// </summary>
         /// <param name="reportRepository">The report repository instance.</param>
-        public ReportController(IReportRepository reportRepository)
+        /// <param name="config">The configuration instance.</param>
+        public ReportController(IReportRepository reportRepository, IConfiguration config)
         {
             _reportRepository = reportRepository;
+            _config = config;
         }
 
         /// <summary>
@@ -26,6 +30,8 @@ namespace Municipality_Application.Controllers
         /// <returns>The report issue view.</returns>
         public IActionResult ReportIssue()
         {
+            var googleMapsKey = _config["ApiKeys:GoogleMaps"];
+            ViewBag.GoogleMapsApiKey = string.IsNullOrWhiteSpace(googleMapsKey) ? null : googleMapsKey;
             return View();
         }
 
