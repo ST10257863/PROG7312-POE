@@ -157,7 +157,27 @@
         // Process files selected via file input
         function handleFileSelect(e) {
             let files = e.target.files;
-            handleFiles(files);
+            // Clear the display and input for new selection
+            fileList.innerHTML = '';
+            let dataTransfer = new DataTransfer();
+            Array.from(files).forEach(file => {
+                if (file.size > MAX_FILE_SIZE) {
+                    alert(`File "${file.name}" exceeds the 5MB size limit and will not be added.`);
+                    return;
+                }
+                dataTransfer.items.add(file);
+                let fileSize = (file.size / 1024 / 1024).toFixed(2);
+                let fileItem = document.createElement('div');
+                fileItem.className = 'd-flex justify-content-between align-items-center mb-1';
+                fileItem.innerHTML = `
+                    <span><i class="bi bi-file-earmark"></i> ${file.name} (${fileSize} MB)</span>
+                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeFile('${file.name}')">
+                        <i class="bi bi-x"></i>
+                    </button>
+                `;
+                fileList.appendChild(fileItem);
+            });
+            fileInput.files = dataTransfer.files;
         }
 
         // Add files to the file input and display list, enforcing size and duplicates
