@@ -12,6 +12,13 @@
                     <input type="text" class="form-control" id="Address" name="Address" placeholder="Enter street address, landmark, or area description" required>
                 </div>
 
+                @if (string.IsNullOrEmpty(ViewBag.GoogleMapsApiKey as string))
+                {
+                    <div class="alert alert-warning">
+                        Location autocomplete is currently unavailable. Please enter your address manually.
+                    </div>
+                }
+
                 <div class="mb-3">
                     <label for="CategoryId" class="form-label"><i class="bi bi-list"></i> Issue Category</label>
                     <select class="form-select" id="CategoryId" name="CategoryId" required>
@@ -88,8 +95,29 @@
     </div>
 </div>
 
-
 @section Scripts {
+    <!-- Google Maps Places Autocomplete for Address Field
+         - Loads the Google Maps JavaScript API with the Places library using the API key from ViewBag.GoogleMapsApiKey.
+         - On DOMContentLoaded, initializes the autocomplete feature for the Address input field.
+         - Restricts autocomplete suggestions to geocoded locations within South Africa (country code 'za').
+         - If the API key is not set, autocomplete is not available and a warning is shown to the user.
+    -->
+    @if (!string.IsNullOrEmpty(ViewBag.GoogleMapsApiKey as string))
+    {
+        <script src="https://maps.googleapis.com/maps/api/js?key=@ViewBag.GoogleMapsApiKey&libraries=places"></script>
+        <script>
+                // Initialize Google Places Autocomplete for the Address input field
+            document.addEventListener('DOMContentLoaded', function () {
+                var input = document.getElementById('Address');
+                if (input && window.google && google.maps && google.maps.places) {
+                    var autocomplete = new google.maps.places.Autocomplete(input, {
+                        types: ['geocode'],
+                        componentRestrictions: { country: 'za' } // Restrict to South Africa
+                    });
+                }
+            });
+        </script>
+    }
     <script>
         // Maximum file size allowed for uploads (5MB)
         const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB

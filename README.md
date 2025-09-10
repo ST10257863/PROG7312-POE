@@ -7,6 +7,7 @@ This application is a municipal issue reporting system built with ASP.NET Core R
 - **Main Menu:** On startup, users see three options: Report Issues (enabled), Local Events and Announcements (disabled), and Service Request Status (disabled).
 - **Report Issues:** Users can provide location, select a category, describe the issue, and attach images or documents. The interface includes feedback and engagement elements.
 - **Attachments:** Users can upload images or documents related to their report.
+- **Google Maps Places Autocomplete:** The address field in the report form uses Google Maps Places Autocomplete to help users quickly and accurately enter their location. Suggestions are restricted to geocoded locations within South Africa.
 
 ## In-Memory Storage (Current Implementation)
 Currently, the application uses an in-memory repository (`InMemoryReportRepository`) to store reports and attachments. All data is kept in server memory and will be lost when the application restarts. Attachments are stored as base64-encoded strings, and all report data is managed using thread-safe collections.
@@ -27,6 +28,9 @@ In the next phase, the in-memory storage will be replaced by database calls usin
 2. Open the solution in Visual Studio.
 3. Build and run the project.
 4. Use the web interface to report issues and attach files.
+
+### Google Maps API Key
+To enable the address autocomplete feature, you must provide a Google Maps API key. Set the key in your configuration (e.g., `appsettings.json` or as an environment variable) and ensure it is available to the view via `ViewBag.GoogleMapsApiKey`.
 
 ---
 
