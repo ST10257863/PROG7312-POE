@@ -8,25 +8,25 @@
         <div class="col-md-8">
             <form asp-action="ReportIssue" method="post" enctype="multipart/form-data">
                 <div class="mb-3">
-                    <label for="location" class="form-label"><i class="bi bi-geo-alt"></i> Location</label>
-                    <input type="text" class="form-control" id="location" name="location" placeholder="Enter street address, landmark, or area description" required>
+                    <label for="Address" class="form-label"><i class="bi bi-geo-alt"></i> Location</label>
+                    <input type="text" class="form-control" id="Address" name="Address" placeholder="Enter street address, landmark, or area description" required>
                 </div>
 
                 <div class="mb-3">
-                    <label for="category" class="form-label"><i class="bi bi-list"></i> Issue Category</label>
-                    <select class="form-select" id="category" name="category" required>
+                    <label for="CategoryId" class="form-label"><i class="bi bi-list"></i> Issue Category</label>
+                    <select class="form-select" id="CategoryId" name="CategoryId" required>
                         <option value="" selected disabled>Select a category</option>
-                        <option value="roads">Roads</option>
-                        <option value="water">Water</option>
-                        <option value="electricity">Electricity</option>
-                        <option value="sanitation">Sanitation</option>
-                        <option value="other">Other</option>
+                        <option value="1">Roads</option>
+                        <option value="2">Water</option>
+                        <option value="3">Electricity</option>
+                        <option value="4">Sanitation</option>
+                        <option value="5">Other</option>
                     </select>
                 </div>
 
                 <div class="mb-3">
-                    <label for="description" class="form-label"><i class="bi bi-file-text"></i> Issue Description</label>
-                    <textarea class="form-control" id="description" name="description" rows="4" placeholder="Please provide detailed information about the issue, including when you first noticed it, how it affects you or the community, and any other relevant details..." required></textarea>
+                    <label for="Description" class="form-label"><i class="bi bi-file-text"></i> Issue Description</label>
+                    <textarea class="form-control" id="Description" name="Description" rows="4" placeholder="Please provide detailed information about the issue..." required></textarea>
                 </div>
 
                 <div class="mb-3">

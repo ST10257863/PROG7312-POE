@@ -24,8 +24,8 @@ namespace Municipality_Application.Data
 
             builder.Entity<Report>()
                 .HasMany(i => i.Attachments)
-                .WithOne(a => a.Issue)
-                .HasForeignKey(a => a.IssueId);
+                .WithOne(a => a.Report)
+                .HasForeignKey(a => a.ReportId);
 
             builder.Entity<Report>()
                 .HasOne(i => i.User)

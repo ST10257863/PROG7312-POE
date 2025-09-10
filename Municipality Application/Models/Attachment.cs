@@ -9,7 +9,7 @@ namespace Municipality_Application.Models
         public Guid Id { get; set; } = Guid.NewGuid();
 
         [Required]
-        public Guid IssueId { get; set; }
+        public Guid ReportId { get; set; }
 
         [Required]
         public required string FileType { get; set; }
@@ -20,7 +20,7 @@ namespace Municipality_Application.Models
         public required string FilePath { get; set; }
 
         // Navigation property
-        [ForeignKey("IssueId")]
-        public Report Issue { get; set; } = null!;
+        [ForeignKey("ReportId")]
+        public Report Report { get; set; } = null!;
     }
 }

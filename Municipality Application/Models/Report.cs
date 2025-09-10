@@ -36,9 +36,8 @@ namespace Municipality_Application.Models
         [EmailAddress]
         public string? Email { get; set; }
 
-        // Navigation properties
         [ForeignKey("CategoryId")]
-        public required Category Category { get; set; }
+        public /*required*/ Category? Category { get; set; } //Will be changed to required and not nullable when DB is implemented
 
         [ForeignKey("UserId")]
         public User? User { get; set; }
