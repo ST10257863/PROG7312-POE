@@ -29,6 +29,24 @@
                     {
                         <p><strong>Contact Email:</strong> @Model.Email</p>
                     }
+
+                    @if (Model.Attachments != null && Model.Attachments.Any())
+                    {
+                        <div class="mt-3">
+                            <strong>Attachments:</strong>
+                            <ul>
+                                @foreach (var attachment in Model.Attachments)
+                                {
+                                    <li>
+                                        <a href="@Url.Content(attachment.FilePath)" target="_blank">
+                                            @attachment.FileName
+                                        </a>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    }
+
                     <p>Please keep this information for future reference.</p>
                     <a asp-controller="Home" asp-action="Dashboard" class="btn btn-primary mt-3">Return to Dashboard</a>
                 </div>

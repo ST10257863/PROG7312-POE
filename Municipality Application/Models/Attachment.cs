@@ -12,6 +12,9 @@ namespace Municipality_Application.Models
         public Guid ReportId { get; set; }
 
         [Required]
+        public required string FileName { get; set; }
+
+        [Required]
         public required string FileType { get; set; }
 
         public long? FileSize { get; set; }

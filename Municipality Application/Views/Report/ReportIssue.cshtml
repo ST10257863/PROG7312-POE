@@ -121,8 +121,13 @@
         }
 
         function handleFiles(files) {
-            Array.from(files).forEach((file, index) => {
+            let dataTransfer = new DataTransfer();
+            // Add existing files already in the input
+            Array.from(fileInput.files).forEach(f => dataTransfer.items.add(f));
+            // Add new files from drop or selection
+            Array.from(files).forEach(file => {
                 if (!fileAlreadyAdded(file)) {
+                    dataTransfer.items.add(file);
                     let fileSize = (file.size / 1024 / 1024).toFixed(2); // Convert to MB
                     let fileItem = document.createElement('div');
                     fileItem.className = 'd-flex justify-content-between align-items-center mb-1';
@@ -135,6 +140,7 @@
                     fileList.appendChild(fileItem);
                 }
             });
+            fileInput.files = dataTransfer.files;
         }
 
         function fileAlreadyAdded(file) {
