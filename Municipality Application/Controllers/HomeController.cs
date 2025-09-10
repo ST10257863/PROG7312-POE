@@ -13,7 +13,7 @@ namespace Municipality_Application.Controllers
             _logger = logger;
         }
 
-        public IActionResult Index()
+        public IActionResult Dashboard()
         {
             return View();
         }

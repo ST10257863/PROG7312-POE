@@ -1,0 +1,61 @@
+﻿@{
+    ViewData["Title"] = "MunicipalConnect - Municipal Services Portal";
+}
+
+<div class="container mt-4">
+    <h1 class="text-center mb-4">Municipal Services Dashboard</h1>
+    <p class="text-center mb-5">Access city services, report issues, and stay informed about local events and announcements.</p>
+
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="card card-hover clickable-card h-100">
+                <a asp-controller="Report" asp-action="ReportIssue" class="text-decoration-none text-dark">
+                    <div class="card-body text-center">
+                        <i class="bi bi-exclamation-triangle fs-1 mb-3"></i>
+                        <h5 class="card-title">Report Issues</h5>
+                        <p class="card-text">Report potholes, broken streetlights, graffiti, and other municipal issues in your neighborhood.</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card card-hover h-100">
+                @* <a asp-controller="EventsAndAnnouncements" asp-action="EventsAndAnnouncements" class="text-decoration-none text-dark"> *@
+                <div class="card-body text-center">
+                    <i class="bi bi-calendar-event fs-1 mb-3"></i>
+                    <h5 class="card-title">Local Events & Announcements</h5>
+                    <p class="card-text">Stay updated with community events, public meetings, and important city announcements.</p>
+                    <button class="btn btn-secondary" disabled>Coming Soon</button>
+                </div>
+                @* </a> *@
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card card-hover h-100">
+                @* <a asp-controller="Report" asp-action="ServiceRequestStatus" class="text-decoration-none text-dark"> *@
+                <div class="card-body text-center">
+                    <i class="bi bi-clipboard-check fs-1 mb-3"></i>
+                    <h5 class="card-title">Service Request Status</h5>
+                    <p class="card-text">Track the progress of your submitted reports and service requests.</p>
+                    <button class="btn btn-secondary" disabled>Coming Soon</button>
+                </div>
+                @* </a> *@
+            </div>
+        </div>
+    </div>
+
+    <div class="card mt-4">
+        <div class="card-body text-center">
+            <h5 class="card-title">Need Help?</h5>
+            <p class="card-text">Our customer service team is available to assist you with any questions or technical issues.</p>
+            <div class="row justify-content-center">
+                <div class="col-md-3">
+                    <p><i class="bi bi-telephone"></i> (555) 123-4567</p>
+                </div>
+                <div class="col-md-3">
+                    <p><i class="bi bi-envelope"></i> support@MunicipalConnect.gov</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

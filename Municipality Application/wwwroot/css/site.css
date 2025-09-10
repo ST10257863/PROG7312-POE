@@ -1,31 +1,144 @@
+:root {
+    --primary-color: #0077be;
+    --secondary-color: #f8f9fa;
+    --dark-color: #333;
+    --hover-dark-color: #000;
+}
+
+/* Base Styles */
+html, body {
+    height: 100%;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
 html {
-  font-size: 14px;
-}
-
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
+    font-size: 14px;
+    position: relative;
+    min-height: 100%;
 }
 
 body {
-  margin-bottom: 60px;
+    display: flex;
+    flex-direction: column;
 }
 
-.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
-  color: var(--bs-secondary-color);
-  text-align: end;
+@media (min-width: 768px) {
+    html {
+        font-size: 16px;
+    }
 }
 
-.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
-  text-align: start;
+/* Layout */
+.container {
+    flex: 1 0 auto;
 }
+
+/* Navigation */
+.navbar {
+    box-shadow: 0 2px 4px rgba(0,0,0,.1);
+}
+
+.navbar-brand {
+    font-weight: bold;
+}
+
+/* Buttons */
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+    .btn-primary:hover {
+        background-color: #005fa3;
+        border-color: #005fa3;
+    }
+
+.btn-dark {
+    background-color: var(--dark-color);
+    border-color: var(--dark-color);
+}
+
+    .btn-dark:hover {
+        background-color: var(--hover-dark-color);
+        border-color: var(--hover-dark-color);
+    }
+
+.btn:focus,
+.btn:active:focus,
+.btn-link.nav-link:focus,
+.form-control:focus,
+.form-check-input:focus {
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+/* Forms */
+.form-floating > .form-control-plaintext::placeholder,
+.form-floating > .form-control::placeholder {
+    color: var(--bs-secondary-color);
+    text-align: end;
+}
+
+.form-floating > .form-control-plaintext:focus::placeholder,
+.form-floating > .form-control:focus::placeholder {
+    text-align: start;
+}
+
+/* Cards */
+.card {
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card-hover:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0,0,0,.1);
+}
+
+.clickable-card {
+    cursor: pointer;
+}
+
+/* Footer */
+.footer {
+    flex-shrink: 0;
+    background-color: var(--secondary-color);
+    border-top: 1px solid #dee2e6;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    margin-top: 2rem;
+}
+
+.social-icons a {
+    font-size: 1.2rem;
+    color: var(--primary-color);
+}
+
+/* Utility Classes */
+.text-primary {
+    color: var(--primary-color) !important;
+}
+
+/* Custom Components */
+#dropzone {
+    border: 2px dashed #ccc;
+    border-radius: 4px;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+}
+
+    #dropzone:hover {
+        background-color: var(--secondary-color);
+    }
+
+#file-list {
+    max-height: 150px;
+    overflow-y: auto;
+}
+
+    #file-list > div {
+        font-size: 0.9em;
+    }
+
+    #file-list .btn-outline-danger {
+        padding: 0.1rem 0.3rem;
+    }
