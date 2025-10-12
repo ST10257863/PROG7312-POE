@@ -5,7 +5,7 @@ namespace Municipality_Application.Controllers
 {
     public class EventsAndAnnouncementsController : Controller
     {
-        public IActionResult EventsAndAnnouncements()
+        public IActionResult Index()
         {
             return View();
         }

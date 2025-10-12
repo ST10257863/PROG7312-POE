@@ -14,10 +14,18 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-light bg-primary">
             <div class="container-fluid">
-                <a class="navbar-brand text-white" asp-area="" asp-controller="Home" asp-action="Dashboard">
+                <a class="navbar-brand text-white" asp-area="" asp-controller="Home" asp-action="Index">
                     <i class="bi bi-building fs-3 me-2"></i>
                     Municipal Connect
                 </a>
+                <div class="collapse navbar-collapse">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="Index">Home</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-controller="Report" asp-action="Index">Report Issues</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-controller="Events" asp-action="Index">Local Events</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-controller="Report" asp-action="ServiceRequestStatus">Service Request Status</a></li>
+                    </ul>
+                </div>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
@@ -48,7 +56,7 @@
                 <div class="col-md-4">
                     <h5 class="text-primary">Quick Links</h5>
                     <ul class="list-unstyled">
-                        <li><a asp-controller="Report" asp-action="ReportIssue" class="text-muted">Report Issues</a></li>
+                        <li><a asp-controller="Report" asp-action="Index" class="text-decoration-none text-dark">Report Issues</a></li>
                     </ul>
                 </div>
                 <div class="col-md-4">

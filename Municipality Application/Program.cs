@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Municipality_Application.Data;
 using Municipality_Application.Interfaces;
+using Municipality_Application.Services; // Add this for EventService
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,11 +9,12 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 
 // Add EF Core with LocalDB
-
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("ApplicationDbConnection")));
 
+// Register repositories and services
 builder.Services.AddSingleton<IReportRepository, InMemoryReportRepository>();
+builder.Services.AddSingleton<IEventService, EventService>(); // Register EventService for IEventService
 
 var app = builder.Build();
 
@@ -32,6 +34,6 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Dashboard}/{id?}");
+    pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();

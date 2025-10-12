@@ -28,7 +28,7 @@ namespace Municipality_Application.Controllers
         /// Displays the form for reporting a new issue.
         /// </summary>
         /// <returns>The report issue view.</returns>
-        public IActionResult ReportIssue()
+        public IActionResult Index()
         {
             var googleMapsKey = _config["ApiKeys:GoogleMaps"];
             ViewBag.GoogleMapsApiKey = string.IsNullOrWhiteSpace(googleMapsKey) ? null : googleMapsKey;
@@ -53,7 +53,7 @@ namespace Municipality_Application.Controllers
         /// Redirects to the confirmation page if successful; otherwise, redisplays the form with validation errors.
         /// </returns>
         [HttpPost]
-        public async Task<IActionResult> ReportIssue(Report report, List<IFormFile> files)
+        public async Task<IActionResult> Create(Report report, List<IFormFile> files)
         {
             #region Debugging
             Console.WriteLine($"Files received: {files?.Count ?? 0}");

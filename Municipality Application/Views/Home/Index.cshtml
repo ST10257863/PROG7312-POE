@@ -9,7 +9,7 @@
     <div class="row">
         <div class="col-md-4 mb-4">
             <div class="card card-hover clickable-card h-100">
-                <a asp-controller="Report" asp-action="ReportIssue" class="text-decoration-none text-dark">
+                <a asp-controller="Report" asp-action="Index" class="text-decoration-none text-dark">
                     <div class="card-body text-center">
                         <i class="bi bi-exclamation-triangle fs-1 mb-3"></i>
                         <h5 class="card-title">Report Issues</h5>
@@ -20,14 +20,14 @@
         </div>
         <div class="col-md-4 mb-4">
             <div class="card card-hover h-100">
-                @* <a asp-controller="EventsAndAnnouncements" asp-action="EventsAndAnnouncements" class="text-decoration-none text-dark"> *@
+                <a asp-controller="Events" asp-action="Index" class="text-decoration-none text-dark">
                 <div class="card-body text-center">
                     <i class="bi bi-calendar-event fs-1 mb-3"></i>
                     <h5 class="card-title">Local Events & Announcements</h5>
                     <p class="card-text">Stay updated with community events, public meetings, and important city announcements.</p>
-                    <button class="btn btn-secondary" disabled>Coming Soon</button>
+                    @* <button class="btn btn-secondary" disabled>Coming Soon</button> *@
                 </div>
-                @* </a> *@
+                </a>
             </div>
         </div>
         <div class="col-md-4 mb-4">
