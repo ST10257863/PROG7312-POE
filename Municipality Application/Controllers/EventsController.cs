@@ -15,12 +15,12 @@ namespace Municipality_Application.Controllers
             _config = config;
         }
 
-        public IActionResult Index(string search, string category, DateTime? date)
+        public IActionResult Index(string search, string category, DateTime? date, double? latitude, double? longitude)
         {
             var googleMapsKey = _config["ApiKeys:GoogleMaps"];
             ViewBag.GoogleMapsApiKey = string.IsNullOrWhiteSpace(googleMapsKey) ? null : googleMapsKey;
 
-            var events = _eventService.GetEvents(search, category, date);
+            var events = _eventService.GetEvents(search, category, date, latitude, longitude);
             var recommendations = _eventService.GetRecommendations(search, category, date);
             ViewBag.Categories = _eventService.GetCategories();
             ViewBag.Recommendations = recommendations;

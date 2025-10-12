@@ -7,7 +7,7 @@ namespace Municipality_Application.Interfaces
         /// <summary>
         /// Retrieves events filtered by optional search keyword, category, or date.
         /// </summary>
-        IEnumerable<Event> GetEvents(string? search, string? category, DateTime? date);
+        IEnumerable<Event> GetEvents(string? search, string? category, DateTime? date, double? latitude, double? longitude);
 
         /// <summary>
         /// Returns recommended events based on user search behavior or category similarity.

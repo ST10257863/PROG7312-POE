@@ -7,7 +7,7 @@
 
 <div class="container mt-4">
     <h1 class="mb-4">Local Events & Announcements</h1>
-    <form method="get" class="row mb-4">
+    <form method="get" class="row mb-4" id="eventSearchForm">
         <div class="col-md-3">
             <input type="text" name="search" class="form-control" placeholder="Search by keyword..." />
         </div>
@@ -26,6 +26,13 @@
         <div class="col-md-3">
             <button type="submit" class="btn btn-primary w-100">Search</button>
         </div>
+        <div class="mb-3">
+            <label for="EventAddress" class="form-label"><i class="bi bi-geo-alt"></i> Event Location</label>
+            <input type="text" class="form-control" id="EventAddress" name="Address" placeholder="Enter event address or location" />
+        </div>
+
+        <input type="hidden" id="Latitude" name="Latitude" />
+        <input type="hidden" id="Longitude" name="Longitude" />
     </form>
 
     <h4>Recommended Events</h4>
@@ -63,3 +70,28 @@
         }
     </div>
 </div>
+
+@section Scripts {
+    @if (!string.IsNullOrEmpty(ViewBag.GoogleMapsApiKey as string))
+    {
+        <script src="https://maps.googleapis.com/maps/api/js?key=@ViewBag.GoogleMapsApiKey&libraries=places"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                var input = document.getElementById('EventAddress');
+                if (input && window.google && google.maps && google.maps.places) {
+                    var autocomplete = new google.maps.places.Autocomplete(input, {
+                        types: ['geocode'],
+                        componentRestrictions: { country: 'za' } // Restrict to South Africa
+                    });
+                    autocomplete.addListener('place_changed', function () {
+                        var place = autocomplete.getPlace();
+                        if (place.geometry) {
+                            document.getElementById('Latitude').value = place.geometry.location.lat();
+                            document.getElementById('Longitude').value = place.geometry.location.lng();
+                        }
+                    });
+                }
+            });
+        </script>
+    }
+}
