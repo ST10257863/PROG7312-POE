@@ -1,15 +1,27 @@
 ﻿@model IEnumerable<Municipality_Application.Models.Event>
 @{
     ViewData["Title"] = "Local Events";
-    var categories = ViewBag.Categories as HashSet<string>;
-    var recommendations = ViewBag.Recommendations as IEnumerable<Municipality_Application.Models.Event>;
+    var categories = ViewBag.Categories as HashSet<string> ?? new HashSet<string>();
+    var recommendations = ViewBag.Recommendations as IEnumerable<Municipality_Application.Models.Event> ?? Enumerable.Empty<Municipality_Application.Models.Event>();
+    var request = ViewContext.HttpContext.Request;
+    string searchValue = request.Query["search"].ToString();
+    string categoryValue = request.Query["category"].ToString();
+    string dateValue = request.Query["date"].ToString();
+    string addressValue = request.Query["Address"].ToString();
+    string latitudeValue = request.Query["Latitude"].ToString();
+    string longitudeValue = request.Query["Longitude"].ToString();
+    bool hasSearch = !string.IsNullOrWhiteSpace(searchValue)
+        || !string.IsNullOrWhiteSpace(categoryValue)
+        || !string.IsNullOrWhiteSpace(dateValue)
+        || !string.IsNullOrWhiteSpace(latitudeValue)
+        || !string.IsNullOrWhiteSpace(longitudeValue);
 }
 
 <div class="container mt-4">
     <h1 class="mb-4">Local Events & Announcements</h1>
     <form method="get" class="row mb-4" id="eventSearchForm">
         <div class="col-md-3">
-            <input type="text" name="search" class="form-control" placeholder="Search by keyword..." />
+            <input type="text" name="search" class="form-control" placeholder="Search by keyword..." value="@searchValue" />
         </div>
         <div class="col-md-3">
             <select name="category" class="form-select">
@@ -21,52 +33,66 @@
             </select>
         </div>
         <div class="col-md-3">
-            <input type="date" name="date" class="form-control" />
+            <input type="date" name="date" class="form-control" value="@dateValue" />
         </div>
-        <div class="col-md-3">
+        <div class="col-md-3 d-flex gap-2">
             <button type="submit" class="btn btn-primary w-100">Search</button>
+            <button type="button" class="btn btn-outline-secondary w-100" onclick="clearEventFilters()">Clear Filter</button>
         </div>
         <div class="mb-3">
             <label for="EventAddress" class="form-label"><i class="bi bi-geo-alt"></i> Event Location</label>
-            <input type="text" class="form-control" id="EventAddress" name="Address" placeholder="Enter event address or location" />
+            <input type="text" class="form-control" id="EventAddress" name="Address" placeholder="Enter event address or location" value="@addressValue" />
         </div>
-
-        <input type="hidden" id="Latitude" name="Latitude" />
-        <input type="hidden" id="Longitude" name="Longitude" />
+        <input type="hidden" id="Latitude" name="Latitude" value="@latitudeValue" />
+        <input type="hidden" id="Longitude" name="Longitude" value="@longitudeValue" />
     </form>
 
-    <h4>Recommended Events</h4>
-    <div class="row mb-3">
-        @foreach (var ev in recommendations)
-        {
-            <div class="col-md-4 mb-2">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">@ev.Title</h5>
-                        <p class="card-text">@ev.Description</p>
-                        <span class="badge bg-info">@ev.Category</span>
-                        <span class="badge bg-secondary">@ev.Date.ToShortDateString()</span>
+    @if (!hasSearch)
+    {
+        <h4>Recommended Events</h4>
+        <div class="row mb-3">
+            @foreach (var ev in recommendations)
+            {
+                <div class="col-md-4 mb-2">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">@ev.Title</h5>
+                            <p class="card-text">@ev.Description</p>
+                            <span class="badge bg-info">@ev.Category</span>
+                            <span class="badge bg-secondary">@ev.Date.ToShortDateString()</span>
+                        </div>
                     </div>
+                </div>
+            }
+        </div>
+    }
+
+    <h4>@(hasSearch ? "Search Results" : "All Events")</h4>
+    <div class="row">
+        @if (Model == null || !Model.Any())
+        {
+            <div class="col-12">
+                <div class="alert alert-warning text-center">
+                    No events found matching your search criteria.
                 </div>
             </div>
         }
-    </div>
-
-    <h4>All Events</h4>
-    <div class="row">
-        @foreach (var ev in Model)
+        else
         {
-            <div class="col-md-4 mb-2">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">@ev.Title</h5>
-                        <p class="card-text">@ev.Description</p>
-                        <span class="badge bg-info">@ev.Category</span>
-                        <span class="badge bg-secondary">@ev.Date.ToShortDateString()</span>
-                        <span class="badge bg-light text-dark">@ev.Location</span>
+            @foreach (var ev in Model)
+            {
+                <div class="col-md-4 mb-2">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">@ev.Title</h5>
+                            <p class="card-text">@ev.Description</p>
+                            <span class="badge bg-info">@ev.Category</span>
+                            <span class="badge bg-secondary">@ev.Date.ToShortDateString()</span>
+                            <span class="badge bg-light text-dark">@ev.Location</span>
+                        </div>
                     </div>
                 </div>
-            </div>
+            }
         }
     </div>
 </div>
@@ -81,7 +107,7 @@
                 if (input && window.google && google.maps && google.maps.places) {
                     var autocomplete = new google.maps.places.Autocomplete(input, {
                         types: ['geocode'],
-                        componentRestrictions: { country: 'za' } // Restrict to South Africa
+                        componentRestrictions: { country: 'za' }
                     });
                     autocomplete.addListener('place_changed', function () {
                         var place = autocomplete.getPlace();
@@ -92,6 +118,15 @@
                     });
                 }
             });
+
+            function clearEventFilters() {
+                document.getElementById('eventSearchForm').reset();
+                document.getElementById('EventAddress').value = '';
+                document.getElementById('Latitude').value = '';
+                document.getElementById('Longitude').value = '';
+                // Remove query params by redirecting to the base Events page
+                window.location.href = '@Url.Action("Index", "Events")';
+            }
         </script>
     }
 }
