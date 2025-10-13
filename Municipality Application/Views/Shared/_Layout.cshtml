@@ -14,25 +14,40 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-light bg-primary">
             <div class="container-fluid">
-                <a class="navbar-brand text-white" asp-area="" asp-controller="Home" asp-action="Index">
+                <!-- Logo -->
+                <a class="navbar-brand text-white d-flex align-items-center" asp-area="" asp-controller="Home" asp-action="Index">
                     <i class="bi bi-building fs-3 me-2"></i>
                     Municipal Connect
                 </a>
-                <div class="collapse navbar-collapse">
-                    <ul class="navbar-nav ms-auto">
-                        <li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="Index">Home</a></li>
-                        <li class="nav-item"><a class="nav-link" asp-controller="Report" asp-action="Index">Report Issues</a></li>
-                        <li class="nav-item"><a class="nav-link" asp-controller="Events" asp-action="Index">Local Events</a></li>
-                        <li class="nav-item"><a class="nav-link" asp-controller="Report" asp-action="ServiceRequestStatus">Service Request Status</a></li>
+                <!-- Navigation Links and Search Bar -->
+                <div class="d-flex flex-grow-1 align-items-center">
+                    <!-- Hyperlinks -->
+                    <ul class="navbar-nav ms-3 flex-row">
+                        <li class="nav-item">
+                            <a class="nav-link text-white px-3" asp-controller="Home" asp-action="Index">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white px-3" asp-controller="Report" asp-action="Index">Report Issues</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white px-3" asp-controller="Events" asp-action="Index">Local Events</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white px-3" asp-controller="Report" asp-action="ServiceRequestStatus">Service Request Status</a>
+                        </li>
                     </ul>
+                    <!-- Spacer -->
+                    <div class="flex-grow-1"></div>
+                    <!-- Search Bar -->
+                    <form class="d-flex ms-3" role="search">
+                        <input class="form-control me-2" type="search" placeholder="Search services..." aria-label="Search">
+                        <button class="btn btn-outline-light" type="submit">Search</button>
+                    </form>
                 </div>
+                <!-- Mobile Toggler -->
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <form class="d-flex">
-                    <input class="form-control me-2" type="search" placeholder="Search services..." aria-label="Search">
-                    <button class="btn btn-outline-light" type="submit">Search</button>
-                </form>
             </div>
         </nav>
     </header>

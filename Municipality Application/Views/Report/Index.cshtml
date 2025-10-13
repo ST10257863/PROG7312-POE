@@ -19,6 +19,10 @@
                     </div>
                 }
 
+                <!-- Hidden latitude and longitude fields for Google Maps API -->
+                <input type="hidden" id="Latitude" name="Latitude" />
+                <input type="hidden" id="Longitude" name="Longitude"/>
+
                 <div class="mb-3">
                     <label for="CategoryId" class="form-label"><i class="bi bi-list"></i> Issue Category</label>
                     <select class="form-select" id="CategoryId" name="CategoryId" required>
@@ -112,13 +116,22 @@
     {
         <script src="https://maps.googleapis.com/maps/api/js?key=@ViewBag.GoogleMapsApiKey&libraries=places"></script>
         <script>
-                // Initialize Google Places Autocomplete for the Address input field
+            // Initialize Google Places Autocomplete for the Address input field
             document.addEventListener('DOMContentLoaded', function () {
                 var input = document.getElementById('Address');
+                var latitudeInput = document.getElementById('Latitude');
+                var longitudeInput = document.getElementById('Longitude');
                 if (input && window.google && google.maps && google.maps.places) {
                     var autocomplete = new google.maps.places.Autocomplete(input, {
                         types: ['geocode'],
                         componentRestrictions: { country: 'za' } // Restrict to South Africa
+                    });
+                    autocomplete.addListener('place_changed', function () {
+                        var place = autocomplete.getPlace();
+                        if (place.geometry) {
+                            latitudeInput.value = place.geometry.location.lat();
+                            longitudeInput.value = place.geometry.location.lng();
+                        }
                     });
                 }
             });
@@ -141,7 +154,6 @@
             dropzone.addEventListener(eventName, preventDefaults, false);
         });
 
-        // Prevent default and stop propagation for drag/drop events
         function preventDefaults(e) {
             e.preventDefault();
             e.stopPropagation();

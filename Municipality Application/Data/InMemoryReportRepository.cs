@@ -4,11 +4,19 @@ using System.Collections.Concurrent;
 
 namespace Municipality_Application.Data
 {
+    /// <summary>
+    /// In-memory implementation of <see cref="IReportRepository"/> for managing report and attachment data during application runtime.
+    /// </summary>
     public class InMemoryReportRepository : IReportRepository
     {
         private readonly ConcurrentDictionary<Guid, Report> _reports = new();
         private readonly ConcurrentDictionary<Guid, List<Attachment>> _attachments = new();
 
+        /// <summary>
+        /// Adds a new report to the in-memory store.
+        /// </summary>
+        /// <param name="report">The report to add.</param>
+        /// <returns>The added <see cref="Report"/> entity.</returns>
         public Task<Report> AddReportAsync(Report report)
         {
             if (report.Id == Guid.Empty)
@@ -21,6 +29,11 @@ namespace Municipality_Application.Data
             return Task.FromResult(report);
         }
 
+        /// <summary>
+        /// Retrieves a report by its unique identifier.
+        /// </summary>
+        /// <param name="id">The report's unique identifier.</param>
+        /// <returns>The <see cref="Report"/> entity if found; otherwise, null.</returns>
         public Task<Report> GetReportByIdAsync(Guid id)
         {
             _reports.TryGetValue(id, out var report);
@@ -34,6 +47,10 @@ namespace Municipality_Application.Data
             return Task.FromResult(report);
         }
 
+        /// <summary>
+        /// Retrieves all reports from the in-memory store.
+        /// </summary>
+        /// <returns>A list of all <see cref="Report"/> entities.</returns>
         public Task<IEnumerable<Report>> GetAllReportsAsync()
         {
             var reports = _reports.Values.ToList();
@@ -47,6 +64,11 @@ namespace Municipality_Application.Data
             return Task.FromResult(reports.AsEnumerable());
         }
 
+        /// <summary>
+        /// Updates an existing report in the in-memory store.
+        /// </summary>
+        /// <param name="report">The report with updated data.</param>
+        /// <returns>True if the update was successful; otherwise, false.</returns>
         public Task<bool> UpdateReportAsync(Report report)
         {
             if (!_reports.ContainsKey(report.Id))
@@ -59,6 +81,11 @@ namespace Municipality_Application.Data
             return Task.FromResult(true);
         }
 
+        /// <summary>
+        /// Deletes a report and its attachments from the in-memory store.
+        /// </summary>
+        /// <param name="id">The report's unique identifier.</param>
+        /// <returns>True if the deletion was successful; otherwise, false.</returns>
         public Task<bool> DeleteReportAsync(Guid id)
         {
             var removed = _reports.TryRemove(id, out _);

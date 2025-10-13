@@ -15,6 +15,7 @@
         || !string.IsNullOrWhiteSpace(dateValue)
         || !string.IsNullOrWhiteSpace(latitudeValue)
         || !string.IsNullOrWhiteSpace(longitudeValue);
+    bool locationServicesAvailable = !string.IsNullOrEmpty(ViewBag.GoogleMapsApiKey as string);
 }
 
 <div class="container mt-4">
@@ -41,8 +42,16 @@
         </div>
         <div class="mb-3">
             <label for="EventAddress" class="form-label"><i class="bi bi-geo-alt"></i> Event Location</label>
-            <input type="text" class="form-control" id="EventAddress" name="Address" placeholder="Enter event address or location" value="@addressValue" />
+            <input type="text" class="form-control" id="EventAddress" name="Address" placeholder="Enter event address or location" value="@addressValue" @(locationServicesAvailable ? "" : "disabled") />
+            
         </div>
+        @* Google Maps API notification *@
+        @if (!locationServicesAvailable)
+        {
+            <div class="alert alert-warning mt-2">
+                <strong>Location services are currently unavailable.</strong> We apologise for the inconvenience.
+            </div>
+        }
         <input type="hidden" id="Latitude" name="Latitude" value="@latitudeValue" />
         <input type="hidden" id="Longitude" name="Longitude" value="@longitudeValue" />
     </form>

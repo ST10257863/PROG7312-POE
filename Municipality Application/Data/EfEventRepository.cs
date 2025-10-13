@@ -4,15 +4,27 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Municipality_Application.Data
 {
+    /// <summary>
+    /// Entity Framework Core implementation of <see cref="IEventRepository"/> for managing event data in the database.
+    /// </summary>
     public class EfEventRepository : IEventRepository
     {
         private readonly AppDbContext _dbContext;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EfEventRepository"/> class.
+        /// </summary>
+        /// <param name="dbContext">The application's database context.</param>
         public EfEventRepository(AppDbContext dbContext)
         {
             _dbContext = dbContext;
         }
 
+        /// <summary>
+        /// Adds a new event to the database.
+        /// </summary>
+        /// <param name="ev">The event to add.</param>
+        /// <returns>The added <see cref="Event"/> entity.</returns>
         public async Task<Event> AddEventAsync(Event ev)
         {
             _dbContext.Events.Add(ev);
@@ -20,16 +32,30 @@ namespace Municipality_Application.Data
             return ev;
         }
 
+        /// <summary>
+        /// Retrieves an event by its unique identifier.
+        /// </summary>
+        /// <param name="id">The event's unique identifier.</param>
+        /// <returns>The <see cref="Event"/> entity if found; otherwise, null.</returns>
         public async Task<Event?> GetEventByIdAsync(int id)
         {
             return await _dbContext.Events.FindAsync(id);
         }
 
+        /// <summary>
+        /// Retrieves all events from the database.
+        /// </summary>
+        /// <returns>A list of all <see cref="Event"/> entities.</returns>
         public async Task<IEnumerable<Event>> GetAllEventsAsync()
         {
             return await _dbContext.Events.ToListAsync();
         }
 
+        /// <summary>
+        /// Updates an existing event in the database.
+        /// </summary>
+        /// <param name="ev">The event with updated data.</param>
+        /// <returns>True if the update was successful; otherwise, false.</returns>
         public async Task<bool> UpdateEventAsync(Event ev)
         {
             var existing = await _dbContext.Events.FindAsync(ev.Id);
@@ -41,6 +67,11 @@ namespace Municipality_Application.Data
             return true;
         }
 
+        /// <summary>
+        /// Deletes an event from the database.
+        /// </summary>
+        /// <param name="id">The event's unique identifier.</param>
+        /// <returns>True if the deletion was successful; otherwise, false.</returns>
         public async Task<bool> DeleteEventAsync(int id)
         {
             var ev = await _dbContext.Events.FindAsync(id);
@@ -52,6 +83,11 @@ namespace Municipality_Application.Data
             return true;
         }
 
+        /// <summary>
+        /// Increments the search frequency for a given search term.
+        /// </summary>
+        /// <param name="searchTerm">The search term to increment.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
         public async Task IncrementSearchFrequencyAsync(string searchTerm)
         {
             var key = searchTerm.ToLower();
@@ -69,12 +105,20 @@ namespace Municipality_Application.Data
             await _dbContext.SaveChangesAsync();
         }
 
+        /// <summary>
+        /// Retrieves the search frequency dictionary for all search terms.
+        /// </summary>
+        /// <returns>A dictionary mapping search terms to their frequency.</returns>
         public async Task<Dictionary<string, int>> GetSearchFrequencyAsync()
         {
             return await _dbContext.EventSearchFrequencies
                 .ToDictionaryAsync(e => e.SearchTerm, e => e.Frequency);
         }
 
+        /// <summary>
+        /// Seeds the database with default events if none exist.
+        /// </summary>
+        /// <returns>A task representing the asynchronous operation.</returns>
         public async Task SeedDefaultEventsAsync()
         {
             if (!await _dbContext.Events.AnyAsync())

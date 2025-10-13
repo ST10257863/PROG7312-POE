@@ -1,3 +1,4 @@
+using System.Globalization;
 using Microsoft.EntityFrameworkCore;
 using Municipality_Application.Data;
 using Municipality_Application.Interfaces;
@@ -21,15 +22,15 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
     This allows you to easily change the application's data storage mode for development or production needs.
 */
-// For in-memory
-//builder.Services.AddSingleton<IEventRepository, InMemoryEventRepository>();
-//builder.Services.AddSingleton<IReportRepository, InMemoryReportRepository>();
-//builder.Services.AddSingleton<ICategoryRepository, InMemoryCategoryRepository>();
+//For in-memory
+builder.Services.AddSingleton<IEventRepository, InMemoryEventRepository>();
+builder.Services.AddSingleton<IReportRepository, InMemoryReportRepository>();
+builder.Services.AddSingleton<ICategoryRepository, InMemoryCategoryRepository>();
 
 // For EF Core
-builder.Services.AddScoped<IEventRepository, EfEventRepository>();
-builder.Services.AddScoped<IReportRepository, EfReportRepository>();
-builder.Services.AddScoped<ICategoryRepository, EfCategoryRepository>();
+//builder.Services.AddScoped<IEventRepository, EfEventRepository>();
+//builder.Services.AddScoped<IReportRepository, EfReportRepository>();
+//builder.Services.AddScoped<ICategoryRepository, EfCategoryRepository>();
 
 builder.Services.AddScoped<IEventService, EventService>();
 builder.Services.AddScoped<IReportService, ReportService>();
@@ -62,5 +63,9 @@ using (var scope = app.Services.CreateScope())
     var eventRepo = scope.ServiceProvider.GetRequiredService<IEventRepository>();
     await eventRepo.SeedDefaultEventsAsync();
 }
+
+var cultureInfo = new CultureInfo("en-US");
+CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
+CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
 
 app.Run();

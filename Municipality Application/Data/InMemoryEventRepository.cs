@@ -4,20 +4,28 @@ using System.Collections.Concurrent;
 
 namespace Municipality_Application.Data
 {
+    /// <summary>
+    /// In-memory implementation of <see cref="IEventRepository"/> for managing event data during application runtime.
+    /// </summary>
     public class InMemoryEventRepository : IEventRepository
     {
         private readonly ConcurrentDictionary<int, Event> _events = new();
         private int _nextId = 1;
         private readonly ConcurrentDictionary<string, int> _searchFrequency = new();
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InMemoryEventRepository"/> class.
+        /// </summary>
         public InMemoryEventRepository()
         {
-            // Optionally seed on construction, or call SeedDefaultEventsAsync externally
         }
 
+        /// <summary>
+        /// Seeds the in-memory store with default events.
+        /// </summary>
+        /// <returns>A task representing the asynchronous operation.</returns>
         public async Task SeedDefaultEventsAsync()
         {
-            // Clear existing events to avoid duplicates
             _events.Clear();
             _nextId = 1;
 
@@ -67,6 +75,11 @@ namespace Municipality_Application.Data
             await Task.CompletedTask;
         }
 
+        /// <summary>
+        /// Adds a new event to the in-memory store.
+        /// </summary>
+        /// <param name="ev">The event to add.</param>
+        /// <returns>The added <see cref="Event"/> entity.</returns>
         public Task<Event> AddEventAsync(Event ev)
         {
             ev.Id = _nextId++;
@@ -74,17 +87,31 @@ namespace Municipality_Application.Data
             return Task.FromResult(ev);
         }
 
+        /// <summary>
+        /// Retrieves an event by its unique identifier.
+        /// </summary>
+        /// <param name="id">The event's unique identifier.</param>
+        /// <returns>The <see cref="Event"/> entity if found; otherwise, null.</returns>
         public Task<Event?> GetEventByIdAsync(int id)
         {
             _events.TryGetValue(id, out var ev);
             return Task.FromResult(ev);
         }
 
+        /// <summary>
+        /// Retrieves all events from the in-memory store.
+        /// </summary>
+        /// <returns>A list of all <see cref="Event"/> entities.</returns>
         public Task<IEnumerable<Event>> GetAllEventsAsync()
         {
             return Task.FromResult(_events.Values.AsEnumerable());
         }
 
+        /// <summary>
+        /// Updates an existing event in the in-memory store.
+        /// </summary>
+        /// <param name="ev">The event with updated data.</param>
+        /// <returns>True if the update was successful; otherwise, false.</returns>
         public Task<bool> UpdateEventAsync(Event ev)
         {
             if (!_events.ContainsKey(ev.Id))
@@ -94,11 +121,21 @@ namespace Municipality_Application.Data
             return Task.FromResult(true);
         }
 
+        /// <summary>
+        /// Deletes an event from the in-memory store.
+        /// </summary>
+        /// <param name="id">The event's unique identifier.</param>
+        /// <returns>True if the deletion was successful; otherwise, false.</returns>
         public Task<bool> DeleteEventAsync(int id)
         {
             return Task.FromResult(_events.TryRemove(id, out _));
         }
 
+        /// <summary>
+        /// Increments the search frequency for a given search term.
+        /// </summary>
+        /// <param name="searchTerm">The search term to increment.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
         public Task IncrementSearchFrequencyAsync(string searchTerm)
         {
             var key = searchTerm.ToLower();
@@ -106,6 +143,10 @@ namespace Municipality_Application.Data
             return Task.CompletedTask;
         }
 
+        /// <summary>
+        /// Retrieves the search frequency dictionary for all search terms.
+        /// </summary>
+        /// <returns>A dictionary mapping search terms to their frequency.</returns>
         public Task<Dictionary<string, int>> GetSearchFrequencyAsync()
         {
             return Task.FromResult(_searchFrequency.ToDictionary(kv => kv.Key, kv => kv.Value));
