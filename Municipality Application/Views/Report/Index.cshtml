@@ -23,11 +23,17 @@
                     <label for="CategoryId" class="form-label"><i class="bi bi-list"></i> Issue Category</label>
                     <select class="form-select" id="CategoryId" name="CategoryId" required>
                         <option value="" selected disabled>Select a category</option>
-                        <option value="1">Roads</option>
-                        <option value="2">Water</option>
-                        <option value="3">Electricity</option>
-                        <option value="4">Sanitation</option>
-                        <option value="5">Other</option>
+                        @if (ViewBag.Categories != null)
+                        {
+                            foreach (var category in ViewBag.Categories)
+                            {
+                                <option value="@category.Id">@category.Name</option>
+                            }
+                        }
+                        else
+                        {
+                            <option disabled>No categories available</option>
+                        }
                     </select>
                 </div>
 

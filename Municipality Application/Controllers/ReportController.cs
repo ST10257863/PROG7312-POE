@@ -15,6 +15,7 @@ namespace Municipality_Application.Controllers
     {
         private readonly IConfiguration _config;
         private readonly IReportService _reportService;
+        private readonly ICategoryRepository _categoryRepository;
 
         public string GoogleMapsApiKey { get; }
 
@@ -23,20 +24,26 @@ namespace Municipality_Application.Controllers
         /// </summary>
         /// <param name="reportService">The report service instance.</param>
         /// <param name="config">The configuration instance.</param>
-        public ReportController(IReportService reportService, IConfiguration config)
+        /// <param name="categoryRepository">The category repository instance.</param>
+        public ReportController(IReportService reportService, IConfiguration config, ICategoryRepository categoryRepository)
         {
             _reportService = reportService;
             _config = config;
+            _categoryRepository = categoryRepository;
         }
 
         /// <summary>
         /// Displays the form for reporting a new issue.
         /// </summary>
         /// <returns>The report issue view.</returns>
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             var googleMapsKey = _config["ApiKeys:GoogleMaps"];
             ViewBag.GoogleMapsApiKey = string.IsNullOrWhiteSpace(googleMapsKey) ? null : googleMapsKey;
+
+            var categories = await _categoryRepository.GetAllCategoriesAsync();
+            ViewBag.Categories = categories;
+
             return View();
         }
 
@@ -62,7 +69,8 @@ namespace Municipality_Application.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return View(report);
+                ViewBag.Categories = await _categoryRepository.GetAllCategoriesAsync();
+                return View("Index", report);
             }
 
             try
@@ -73,7 +81,8 @@ namespace Municipality_Application.Controllers
             catch (Exception)
             {
                 ModelState.AddModelError("", "An error occurred while saving the report. Please try again.");
-                return View(report);
+                ViewBag.Categories = await _categoryRepository.GetAllCategoriesAsync();
+                return View("Index", report);
             }
         }
 

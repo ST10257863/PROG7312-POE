@@ -33,7 +33,7 @@ namespace Municipality_Application.Data
                 .HasOne(i => i.User)
                 .WithMany()
                 .HasForeignKey(i => i.UserId)
-                .IsRequired(false);
+                .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }
