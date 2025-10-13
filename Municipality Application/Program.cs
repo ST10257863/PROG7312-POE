@@ -12,6 +12,15 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("ApplicationDbConnection")));
 
+/*
+    Data Storage Configuration:
+    You can switch between in-memory and database-backed (EF Core) repositories by commenting or uncommenting the lines below.
+
+    - For in-memory storage (data is lost on application restart), uncomment the AddSingleton registrations and comment out the AddScoped EF Core registrations.
+    - For persistent database storage (data is saved in SQL via Entity Framework Core), ensure the AddScoped EF Core registrations are uncommented and the in-memory lines are commented.
+
+    This allows you to easily change the application's data storage mode for development or production needs.
+*/
 // For in-memory
 //builder.Services.AddSingleton<IEventRepository, InMemoryEventRepository>();
 //builder.Services.AddSingleton<IReportRepository, InMemoryReportRepository>();
