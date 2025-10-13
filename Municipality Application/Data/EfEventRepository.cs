@@ -52,14 +52,27 @@ namespace Municipality_Application.Data
             return true;
         }
 
-        public Task IncrementSearchFrequencyAsync(string searchTerm)
+        public async Task IncrementSearchFrequencyAsync(string searchTerm)
         {
-            throw new NotImplementedException();
+            var key = searchTerm.ToLower();
+            var entry = await _dbContext.EventSearchFrequencies.FindAsync(key);
+            if (entry == null)
+            {
+                entry = new EventSearchFrequency { SearchTerm = key, Frequency = 1 };
+                _dbContext.EventSearchFrequencies.Add(entry);
+            }
+            else
+            {
+                entry.Frequency += 1;
+                _dbContext.EventSearchFrequencies.Update(entry);
+            }
+            await _dbContext.SaveChangesAsync();
         }
 
-        public Task<Dictionary<string, int>> GetSearchFrequencyAsync()
+        public async Task<Dictionary<string, int>> GetSearchFrequencyAsync()
         {
-            throw new NotImplementedException();
+            return await _dbContext.EventSearchFrequencies
+                .ToDictionaryAsync(e => e.SearchTerm, e => e.Frequency);
         }
     }
 }

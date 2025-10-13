@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace Municipality_Application.Services
 {
@@ -12,7 +13,6 @@ namespace Municipality_Application.Services
     {
         private readonly IReportRepository _reportRepository;
 
-        // Example data structures for business logic
         private readonly Queue<Report> _reportQueue = new();
         private readonly Stack<Report> _reportStack = new();
         private readonly HashSet<int> _categorySet = new();
@@ -41,9 +41,53 @@ namespace Municipality_Application.Services
             }
         }
 
+        private async Task<List<Attachment>> ProcessAttachmentsAsync(Guid reportId, List<IFormFile> files)
+        {
+            const long MaxFileSize = 5 * 1024 * 1024; // 5MB
+            var attachments = new List<Attachment>();
+
+            if (files != null && files.Count > 0)
+            {
+                foreach (var file in files)
+                {
+                    if (file.Length > 0)
+                    {
+                        if (file.Length > MaxFileSize)
+                        {
+                            throw new Exception($"File '{file.FileName}' exceeds the 5MB size limit.");
+                        }
+
+                        using var ms = new MemoryStream();
+                        await file.CopyToAsync(ms);
+                        var fileBytes = ms.ToArray();
+                        var base64 = Convert.ToBase64String(fileBytes);
+                        var dataUrl = $"data:{file.ContentType};base64,{base64}";
+
+                        attachments.Add(new Attachment
+                        {
+                            Id = Guid.NewGuid(),
+                            ReportId = reportId,
+                            FileType = file.ContentType,
+                            FileSize = file.Length,
+                            FilePath = dataUrl,
+                            FileName = file.FileName
+                        });
+                    }
+                }
+            }
+
+            return attachments;
+        }
+
         public async Task<Report> SubmitReportAsync(Report report, List<IFormFile> files)
         {
-            return await _reportRepository.AddReportAsync(report, files);
+            if (report.Id == Guid.Empty)
+            {
+                report.Id = Guid.NewGuid();
+            }
+
+            report.Attachments = await ProcessAttachmentsAsync(report.Id, files);
+            return await _reportRepository.AddReportAsync(report);
         }
 
         public async Task<Report?> GetReportDetailsAsync(Guid id)

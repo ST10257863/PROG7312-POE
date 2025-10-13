@@ -15,7 +15,6 @@ namespace Municipality_Application.Services
         private HashSet<string> _categories = new();
         private Dictionary<string, List<Event>> _eventsByKeyword = new();
         private PriorityQueue<Event, int> _priorityQueue = new();
-        private Dictionary<string, int> _searchFrequency = new();
         private Stack<Event> _eventStack = new();
         private Queue<Event> _eventQueue = new();
 
@@ -122,6 +121,16 @@ namespace Municipality_Application.Services
         {
             await OrganizeEventsAsync();
             return _categories;
+        }
+
+        public async Task IncrementSearchFrequencyAsync(string searchTerm)
+        {
+            await _eventRepository.IncrementSearchFrequencyAsync(searchTerm);
+        }
+
+        public async Task<Dictionary<string, int>> GetSearchFrequencyAsync()
+        {
+            return await _eventRepository.GetSearchFrequencyAsync();
         }
 
         private static double GetDistance(double lat1, double lon1, double lat2, double lon2)

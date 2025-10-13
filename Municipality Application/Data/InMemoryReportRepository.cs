@@ -9,40 +9,13 @@ namespace Municipality_Application.Data
         private readonly ConcurrentDictionary<Guid, Report> _reports = new();
         private readonly ConcurrentDictionary<Guid, List<Attachment>> _attachments = new();
 
-        public Task<Report> AddReportAsync(Report report, List<IFormFile> files)
+        public Task<Report> AddReportAsync(Report report)
         {
             if (report.Id == Guid.Empty)
                 report.Id = Guid.NewGuid();
 
-            var attachments = new List<Attachment>();
-            if (files != null && files.Count > 0)
-            {
-                foreach (var file in files)
-                {
-                    if (file.Length > 0)
-                    {
-                        using var ms = new MemoryStream();
-                        file.CopyTo(ms);
-                        var fileBytes = ms.ToArray();
-                        var base64 = Convert.ToBase64String(fileBytes);
-                        var dataUrl = $"data:{file.ContentType};base64,{base64}";
-
-                        attachments.Add(new Attachment
-                        {
-                            Id = Guid.NewGuid(),
-                            ReportId = report.Id,
-                            FileType = file.ContentType,
-                            FileSize = file.Length,
-                            FilePath = dataUrl,
-                            FileName = file.FileName
-                        });
-                    }
-                }
-            }
-
-            report.Attachments = attachments;
-            if (attachments.Any())
-                _attachments[report.Id] = attachments;
+            if (report.Attachments != null && report.Attachments.Any())
+                _attachments[report.Id] = report.Attachments.ToList();
 
             _reports[report.Id] = report;
             return Task.FromResult(report);
