@@ -14,13 +14,14 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 // For in-memory
 builder.Services.AddSingleton<IEventRepository, InMemoryEventRepository>();
-builder.Services.AddScoped<IReportRepository, InMemoryReportRepository>();
+builder.Services.AddSingleton<IReportRepository, InMemoryReportRepository>();
 
 // For EF Core
 // builder.Services.AddScoped<IEventRepository, EfEventRepository>();
 // builder.Services.AddScoped<IReportRepository, EfReportRepository>();
 
-builder.Services.AddSingleton<IEventService, EventService>(); // Register EventService for IEventService
+builder.Services.AddScoped<IEventService, EventService>();
+builder.Services.AddScoped<IReportService, ReportService>();
 
 var app = builder.Build();
 

@@ -1,6 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Municipality_Application.Interfaces;
 using Municipality_Application.Models;
+using Microsoft.AspNetCore.Http;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Municipality_Application.Controllers
 {
@@ -10,17 +14,18 @@ namespace Municipality_Application.Controllers
     public class ReportController : Controller
     {
         private readonly IConfiguration _config;
-        private readonly IReportRepository _reportRepository;
+        private readonly IReportService _reportService;
+
         public string GoogleMapsApiKey { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ReportController"/> class.
         /// </summary>
-        /// <param name="reportRepository">The report repository instance.</param>
+        /// <param name="reportService">The report service instance.</param>
         /// <param name="config">The configuration instance.</param>
-        public ReportController(IReportRepository reportRepository, IConfiguration config)
+        public ReportController(IReportService reportService, IConfiguration config)
         {
-            _reportRepository = reportRepository;
+            _reportService = reportService;
             _config = config;
         }
 
@@ -55,16 +60,6 @@ namespace Municipality_Application.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(Report report, List<IFormFile> files)
         {
-            #region Debugging
-            Console.WriteLine($"Files received: {files?.Count ?? 0}");
-            if (files != null)
-            {
-                foreach (var file in files)
-                {
-                    Console.WriteLine($"File: {file.FileName}, Size: {file.Length}");
-                }
-            }
-            #endregion
             if (!ModelState.IsValid)
             {
                 return View(report);
@@ -72,7 +67,7 @@ namespace Municipality_Application.Controllers
 
             try
             {
-                var savedReport = await _reportRepository.AddReportAsync(report, files);
+                var savedReport = await _reportService.SubmitReportAsync(report, files);
                 return RedirectToAction("Confirmation", new { id = savedReport.Id });
             }
             catch (Exception)
@@ -91,12 +86,12 @@ namespace Municipality_Application.Controllers
         /// </returns>
         public async Task<IActionResult> Confirmation(Guid id)
         {
-            var report = await _reportRepository.GetReportByIdAsync(id);
+            var report = await _reportService.GetReportDetailsAsync(id);
             if (report == null)
             {
                 return NotFound();
             }
-            return View(report);
+            return View("Confirmation", report);
         }
     }
 }
