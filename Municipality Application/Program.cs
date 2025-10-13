@@ -49,6 +49,9 @@ using (var scope = app.Services.CreateScope())
 {
     var categoryRepo = scope.ServiceProvider.GetRequiredService<ICategoryRepository>();
     await categoryRepo.SeedDefaultCategoriesAsync();
+
+    var eventRepo = scope.ServiceProvider.GetRequiredService<IEventRepository>();
+    await eventRepo.SeedDefaultEventsAsync();
 }
 
 app.Run();

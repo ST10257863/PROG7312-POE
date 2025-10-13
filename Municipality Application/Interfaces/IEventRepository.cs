@@ -11,5 +11,6 @@ namespace Municipality_Application.Interfaces
         Task<bool> DeleteEventAsync(int id);
         Task IncrementSearchFrequencyAsync(string searchTerm);
         Task<Dictionary<string, int>> GetSearchFrequencyAsync();
+        Task SeedDefaultEventsAsync();  
     }
 }
