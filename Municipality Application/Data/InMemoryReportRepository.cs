@@ -4,169 +4,93 @@ using System.Collections.Concurrent;
 
 namespace Municipality_Application.Data
 {
+    /// <summary>
+    /// In-memory implementation of <see cref="IReportRepository"/> for managing report and attachment data during application runtime.
+    /// </summary>
     public class InMemoryReportRepository : IReportRepository
     {
-        // In-memory storage for reports and attachments.
-        private readonly ConcurrentDictionary<Guid, Report> _reports = new ConcurrentDictionary<Guid, Report>();
-        private readonly ConcurrentDictionary<Guid, List<Attachment>> _attachments = new ConcurrentDictionary<Guid, List<Attachment>>();
-        private Queue<Guid> _reportQueue = new Queue<Guid>();
+        private readonly ConcurrentDictionary<Guid, Report> _reports = new();
+        private readonly ConcurrentDictionary<Guid, List<Attachment>> _attachments = new();
 
         /// <summary>
-        /// Adds a new report and its attachments to the in-memory store.
-        /// Throws an exception if any file exceeds 5MB or if the report cannot be added.
+        /// Adds a new report to the in-memory store.
         /// </summary>
         /// <param name="report">The report to add.</param>
-        /// <param name="files">List of files to attach to the report.</param>
-        /// <returns>The saved <see cref="Report"/>.</returns>
-        /// <exception cref="Exception">Thrown if a file exceeds the size limit or the report cannot be added.</exception>
-        public Task<Report> AddReportAsync(Report report, List<IFormFile> files)
+        /// <returns>The added <see cref="Report"/> entity.</returns>
+        public Task<Report> AddReportAsync(Report report)
         {
-            const long MaxFileSize = 5 * 1024 * 1024; // 5MB
-
             if (report.Id == Guid.Empty)
-            {
                 report.Id = Guid.NewGuid();
-            }
 
-            // Handle attachments
-            var attachments = new List<Attachment>();
-            if (files != null && files.Count > 0)
-            {
-                foreach (var file in files)
-                {
-                    if (file.Length > 0)
-                    {
-                        if (file.Length > MaxFileSize)
-                        {
-                            throw new Exception($"File '{file.FileName}' exceeds the 5MB size limit.");
-                        }
+            if (report.Attachments != null && report.Attachments.Any())
+                _attachments[report.Id] = report.Attachments.ToList();
 
-                        // Store file in memory as base64 string (simulate file storage)
-                        using var ms = new MemoryStream();
-                        file.CopyTo(ms);
-                        var fileBytes = ms.ToArray();
-                        var base64 = Convert.ToBase64String(fileBytes);
-                        var dataUrl = $"data:{file.ContentType};base64,{base64}";
-
-                        attachments.Add(new Attachment
-                        {
-                            Id = Guid.NewGuid(),
-                            ReportId = report.Id,
-                            FileType = file.ContentType,
-                            FileSize = file.Length,
-                            FilePath = dataUrl,
-                            FileName = file.FileName
-                        });
-                    }
-                }
-            }
-
-            report.Attachments = attachments;
-
-            // Store attachments in the in-memory dictionary
-            if (attachments.Any())
-            {
-                _attachments[report.Id] = attachments;
-            }
-
-            if (_reports.TryAdd(report.Id, report))
-            {
-                _reportQueue.Enqueue(report.Id);
-                return Task.FromResult(report);
-            }
-
-            throw new Exception("Failed to add report");
+            _reports[report.Id] = report;
+            return Task.FromResult(report);
         }
 
         /// <summary>
-        /// Retrieves a report by its unique identifier, including its attachments.
+        /// Retrieves a report by its unique identifier.
         /// </summary>
         /// <param name="id">The report's unique identifier.</param>
-        /// <returns>The <see cref="Report"/> if found; otherwise, null.</returns>
+        /// <returns>The <see cref="Report"/> entity if found; otherwise, null.</returns>
         public Task<Report> GetReportByIdAsync(Guid id)
         {
-            if (_reports.TryGetValue(id, out Report report))
+            _reports.TryGetValue(id, out var report);
+            if (report != null)
             {
-                // Attachments retrieval
                 if (_attachments.TryGetValue(id, out var attachments))
-                {
                     report.Attachments = attachments;
-                }
                 else
-                {
                     report.Attachments = new List<Attachment>();
-                }
-                return Task.FromResult(report);
             }
-
-            return Task.FromResult<Report>(null);
+            return Task.FromResult(report);
         }
 
         /// <summary>
-        /// Retrieves all reports, including their attachments.
+        /// Retrieves all reports from the in-memory store.
         /// </summary>
-        /// <returns>An enumerable of all <see cref="Report"/> objects.</returns>
+        /// <returns>A list of all <see cref="Report"/> entities.</returns>
         public Task<IEnumerable<Report>> GetAllReportsAsync()
         {
             var reports = _reports.Values.ToList();
             foreach (var report in reports)
             {
                 if (_attachments.TryGetValue(report.Id, out var attachments))
-                {
                     report.Attachments = attachments;
-                }
                 else
-                {
                     report.Attachments = new List<Attachment>();
-                }
             }
             return Task.FromResult(reports.AsEnumerable());
         }
 
         /// <summary>
-        /// Updates an existing report and its attachments.
+        /// Updates an existing report in the in-memory store.
         /// </summary>
-        /// <param name="report">The report to update.</param>
+        /// <param name="report">The report with updated data.</param>
         /// <returns>True if the update was successful; otherwise, false.</returns>
         public Task<bool> UpdateReportAsync(Report report)
         {
-            if (_reports.TryGetValue(report.Id, out Report existingReport))
-            {
-                        if (report.Attachments != null)
-                {
-                    foreach (var attachment in report.Attachments)
-                    {
-                        attachment.ReportId = report.Id;
-                    }
-                    _attachments[report.Id] = report.Attachments.ToList();
-                }
-                _reports[report.Id] = report;
-                return Task.FromResult(true);
-            }
+            if (!_reports.ContainsKey(report.Id))
+                return Task.FromResult(false);
 
-            return Task.FromResult(false);
+            _reports[report.Id] = report;
+            if (report.Attachments != null)
+                _attachments[report.Id] = report.Attachments.ToList();
+
+            return Task.FromResult(true);
         }
 
         /// <summary>
-        /// Deletes a report and its attachments by report identifier.
+        /// Deletes a report and its attachments from the in-memory store.
         /// </summary>
         /// <param name="id">The report's unique identifier.</param>
-        /// <returns>True if the report was deleted; otherwise, false.</returns>
+        /// <returns>True if the deletion was successful; otherwise, false.</returns>
         public Task<bool> DeleteReportAsync(Guid id)
         {
-            if (_reports.TryRemove(id, out _))
-            {
-                _attachments.TryRemove(id, out _);
-                var filteredQueue = _reportQueue.Where(x => x != id).ToList();
-                _reportQueue.Clear();
-                foreach (var item in filteredQueue)
-                {
-                    _reportQueue.Enqueue(item);
-                }
-                return Task.FromResult(true);
-            }
-
-            return Task.FromResult(false);
+            var removed = _reports.TryRemove(id, out _);
+            _attachments.TryRemove(id, out _);
+            return Task.FromResult(removed);
         }
     }
 }

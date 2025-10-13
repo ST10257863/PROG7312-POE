@@ -1,37 +1,46 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Municipality_Application.Interfaces;
 using Municipality_Application.Models;
+using Microsoft.AspNetCore.Http;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Municipality_Application.Controllers
 {
-    /// <summary>
-    /// Controller for handling report-related actions such as submitting issues and viewing confirmations.
-    /// </summary>
     public class ReportController : Controller
     {
         private readonly IConfiguration _config;
-        private readonly IReportRepository _reportRepository;
+        private readonly IReportService _reportService;
+        private readonly ICategoryRepository _categoryRepository;
+
         public string GoogleMapsApiKey { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ReportController"/> class.
         /// </summary>
-        /// <param name="reportRepository">The report repository instance.</param>
+        /// <param name="reportService">The report service instance.</param>
         /// <param name="config">The configuration instance.</param>
-        public ReportController(IReportRepository reportRepository, IConfiguration config)
+        /// <param name="categoryRepository">The category repository instance.</param>
+        public ReportController(IReportService reportService, IConfiguration config, ICategoryRepository categoryRepository)
         {
-            _reportRepository = reportRepository;
+            _reportService = reportService;
             _config = config;
+            _categoryRepository = categoryRepository;
         }
 
         /// <summary>
         /// Displays the form for reporting a new issue.
         /// </summary>
         /// <returns>The report issue view.</returns>
-        public IActionResult ReportIssue()
+        public async Task<IActionResult> Index()
         {
             var googleMapsKey = _config["ApiKeys:GoogleMaps"];
             ViewBag.GoogleMapsApiKey = string.IsNullOrWhiteSpace(googleMapsKey) ? null : googleMapsKey;
+
+            var categories = await _categoryRepository.GetAllCategoriesAsync();
+            ViewBag.Categories = categories;
+
             return View();
         }
 
@@ -45,7 +54,7 @@ namespace Municipality_Application.Controllers
         }
 
         /// <summary>
-        /// Handles the submission of a new issue report, including file attachments.
+        /// Handles the submission of a new issue report, including file attachments and location coordinates.
         /// </summary>
         /// <param name="report">The report data submitted by the user.</param>
         /// <param name="files">The list of files attached to the report.</param>
@@ -53,32 +62,40 @@ namespace Municipality_Application.Controllers
         /// Redirects to the confirmation page if successful; otherwise, redisplays the form with validation errors.
         /// </returns>
         [HttpPost]
-        public async Task<IActionResult> ReportIssue(Report report, List<IFormFile> files)
+        public async Task<IActionResult> Create(Report report, List<IFormFile> files)
         {
-            #region Debugging
-            Console.WriteLine($"Files received: {files?.Count ?? 0}");
-            if (files != null)
-            {
-                foreach (var file in files)
-                {
-                    Console.WriteLine($"File: {file.FileName}, Size: {file.Length}");
-                }
-            }
-            #endregion
+            if (!double.TryParse(Request.Form["Latitude"], System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var lat))
+                report.Latitude = null;
+            else
+                report.Latitude = lat;
+            if (!double.TryParse(Request.Form["Longitude"], System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var lng))
+                report.Longitude = null;
+            else
+                report.Longitude = lng;
             if (!ModelState.IsValid)
             {
-                return View(report);
+                foreach (var key in ModelState.Keys)
+                {
+                    var errors = ModelState[key].Errors;
+                    foreach (var error in errors)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"{key}: {error.ErrorMessage}");
+                    }
+                }
+                ViewBag.Categories = await _categoryRepository.GetAllCategoriesAsync();
+                return View("Index", report);
             }
 
             try
             {
-                var savedReport = await _reportRepository.AddReportAsync(report, files);
+                var savedReport = await _reportService.SubmitReportAsync(report, files);
                 return RedirectToAction("Confirmation", new { id = savedReport.Id });
             }
             catch (Exception)
             {
                 ModelState.AddModelError("", "An error occurred while saving the report. Please try again.");
-                return View(report);
+                ViewBag.Categories = await _categoryRepository.GetAllCategoriesAsync();
+                return View("Index", report);
             }
         }
 
@@ -91,12 +108,12 @@ namespace Municipality_Application.Controllers
         /// </returns>
         public async Task<IActionResult> Confirmation(Guid id)
         {
-            var report = await _reportRepository.GetReportByIdAsync(id);
+            var report = await _reportService.GetReportDetailsAsync(id);
             if (report == null)
             {
                 return NotFound();
             }
-            return View(report);
+            return View("Confirmation", report);
         }
     }
 }

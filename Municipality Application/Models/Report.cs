@@ -25,7 +25,7 @@ namespace Municipality_Application.Models
 
         public required string Address { get; set; }
 
-        public int? UserId { get; set; }
+        public Guid? UserId { get; set; }
 
         [Required]
         public IssueStatus Status { get; set; } = IssueStatus.Reported;
@@ -37,10 +37,10 @@ namespace Municipality_Application.Models
         public string? Email { get; set; }
 
         [ForeignKey("CategoryId")]
-        public /*required*/ Category? Category { get; set; } //Will be changed to required and not nullable when DB is implemented
+        public Category? Category { get; set; } // Navigation only, not for binding
 
         [ForeignKey("UserId")]
-        public User? User { get; set; }
+        public User? User { get; set; } // Navigation only, not for binding
     }
 
     public enum IssueStatus
