@@ -6,10 +6,11 @@ namespace Municipality_Application.Data
     public class AppDbContext : DbContext
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
-
-        public DbSet<Report> Issues { get; set; }
-        public DbSet<Category> Categories { get; set; }
         public DbSet<Attachment> Attachments { get; set; }
+        public DbSet<Category> Categories { get; set; }
+        public DbSet<Department> Departments { get; set; }
+        public DbSet<Event> Events { get; set; }
+        public DbSet<Report> Reports { get; set; }
         public DbSet<User> Users { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)

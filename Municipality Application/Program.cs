@@ -12,8 +12,14 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("ApplicationDbConnection")));
 
-// Register repositories and services
-builder.Services.AddSingleton<IReportRepository, InMemoryReportRepository>();
+// For in-memory
+builder.Services.AddSingleton<IEventRepository, InMemoryEventRepository>();
+builder.Services.AddScoped<IReportRepository, InMemoryReportRepository>();
+
+// For EF Core
+// builder.Services.AddScoped<IEventRepository, EfEventRepository>();
+// builder.Services.AddScoped<IReportRepository, EfReportRepository>();
+
 builder.Services.AddSingleton<IEventService, EventService>(); // Register EventService for IEventService
 
 var app = builder.Build();
