@@ -79,7 +79,7 @@ namespace Municipality_Application.Services
                     (!string.IsNullOrEmpty(e.Category) && e.Category.ToLower().Contains(key)) ||
                     (!string.IsNullOrEmpty(e.Address) && e.Address.ToLower().Contains(key))
                 );
-                _searchFrequency[key] = _searchFrequency.GetValueOrDefault(key, 0) + 1;
+                await _eventRepository.IncrementSearchFrequencyAsync(key);
             }
 
             if (!string.IsNullOrWhiteSpace(category))
@@ -107,7 +107,8 @@ namespace Municipality_Application.Services
         {
             await OrganizeEventsAsync();
 
-            var topSearch = _searchFrequency.OrderByDescending(kv => kv.Value).FirstOrDefault().Key;
+            var searchFrequency = await _eventRepository.GetSearchFrequencyAsync();
+            var topSearch = searchFrequency.OrderByDescending(kv => kv.Value).FirstOrDefault().Key;
             if (!string.IsNullOrEmpty(topSearch) && _eventsByKeyword.ContainsKey(topSearch))
                 return _eventsByKeyword[topSearch].Take(3);
 

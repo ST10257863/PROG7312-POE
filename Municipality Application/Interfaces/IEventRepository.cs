@@ -9,5 +9,7 @@ namespace Municipality_Application.Interfaces
         Task<IEnumerable<Event>> GetAllEventsAsync();
         Task<bool> UpdateEventAsync(Event ev);
         Task<bool> DeleteEventAsync(int id);
+        Task IncrementSearchFrequencyAsync(string searchTerm);
+        Task<Dictionary<string, int>> GetSearchFrequencyAsync();
     }
 }

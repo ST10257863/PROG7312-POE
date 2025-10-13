@@ -51,5 +51,15 @@ namespace Municipality_Application.Data
             await _dbContext.SaveChangesAsync();
             return true;
         }
+
+        public Task IncrementSearchFrequencyAsync(string searchTerm)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<Dictionary<string, int>> GetSearchFrequencyAsync()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

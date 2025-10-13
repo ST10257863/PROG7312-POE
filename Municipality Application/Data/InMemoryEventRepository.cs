@@ -8,6 +8,7 @@ namespace Municipality_Application.Data
     {
         private readonly ConcurrentDictionary<int, Event> _events = new();
         private int _nextId = 1;
+        private readonly ConcurrentDictionary<string, int> _searchFrequency = new();
 
         public InMemoryEventRepository()
         {
@@ -102,6 +103,18 @@ namespace Municipality_Application.Data
         public Task<bool> DeleteEventAsync(int id)
         {
             return Task.FromResult(_events.TryRemove(id, out _));
+        }
+
+        public Task IncrementSearchFrequencyAsync(string searchTerm)
+        {
+            var key = searchTerm.ToLower();
+            _searchFrequency.AddOrUpdate(key, 1, (_, old) => old + 1);
+            return Task.CompletedTask;
+        }
+
+        public Task<Dictionary<string, int>> GetSearchFrequencyAsync()
+        {
+            return Task.FromResult(_searchFrequency.ToDictionary(kv => kv.Key, kv => kv.Value));
         }
     }
 }
