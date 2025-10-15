@@ -4,7 +4,7 @@
 This application is a municipal issue reporting system built with ASP.NET Core Razor Pages. It enables residents to report local issues (such as roads, water, electricity, sanitation, etc.), attach files (images or documents), and receive confirmation and status updates. The user interface is designed to be clear, consistent, and user-friendly, with feedback and engagement features to encourage participation.
 
 ## Features
-- **Main Menu:** On startup, users see three options: Report Issues (enabled), Local Events and Announcements (disabled), and Service Request Status (disabled).
+- **Main Menu:** On startup, users see three options: Report Issues (enabled), Local Events and Announcements (enabled), and Service Request Status (disabled).
 - **Report Issues:** Users can provide location, select a category, describe the issue, and attach images or documents. The interface includes feedback and engagement elements.
 - **Attachments:** Users can upload images or documents related to their report.
 - **Google Maps Places Autocomplete:** The address field in the report form uses Google Maps Places Autocomplete to help users quickly and accurately enter their location. Suggestions are restricted to geocoded locations within South Africa.
