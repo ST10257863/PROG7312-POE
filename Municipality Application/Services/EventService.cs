@@ -67,7 +67,16 @@ namespace Municipality_Application.Services
                     (!string.IsNullOrEmpty(e.Title) && e.Title.ToLower().Contains(key)) ||
                     (!string.IsNullOrEmpty(e.Description) && e.Description.ToLower().Contains(key)) ||
                     (!string.IsNullOrEmpty(e.Category) && e.Category.ToLower().Contains(key)) ||
-                    (!string.IsNullOrEmpty(e.Address) && e.Address.ToLower().Contains(key))
+                    (e.Address != null &&
+                        (
+                            (!string.IsNullOrEmpty(e.Address.FormattedAddress) && e.Address.FormattedAddress.ToLower().Contains(key)) ||
+                            (!string.IsNullOrEmpty(e.Address.Street) && e.Address.Street.ToLower().Contains(key)) ||
+                            (!string.IsNullOrEmpty(e.Address.City) && e.Address.City.ToLower().Contains(key)) ||
+                            (!string.IsNullOrEmpty(e.Address.Province) && e.Address.Province.ToLower().Contains(key)) ||
+                            (!string.IsNullOrEmpty(e.Address.PostalCode) && e.Address.PostalCode.ToLower().Contains(key)) ||
+                            (!string.IsNullOrEmpty(e.Address.Country) && e.Address.Country.ToLower().Contains(key))
+                        )
+                    )
                 );
                 await _eventRepository.IncrementSearchFrequencyAsync(key);
             }
@@ -81,8 +90,8 @@ namespace Municipality_Application.Services
             if (latitude.HasValue && longitude.HasValue)
             {
                 result = result
-                    .Where(e => e.Latitude.HasValue && e.Longitude.HasValue)
-                    .OrderBy(e => GetDistance(latitude.Value, longitude.Value, e.Latitude.Value, e.Longitude.Value));
+                    .Where(e => e.Address != null && e.Address.Latitude.HasValue && e.Address.Longitude.HasValue)
+                    .OrderBy(e => GetDistance(latitude.Value, longitude.Value, e.Address!.Latitude!.Value, e.Address.Longitude!.Value));
             }
             else
             {

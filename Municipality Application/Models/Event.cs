@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Municipality_Application.Models
 {
@@ -18,14 +19,12 @@ namespace Municipality_Application.Models
         [Required]
         public DateTime Date { get; set; }
 
+        // Use Address model instead of string address/location/lat/long
         [Required]
-        public string Address { get; set; } = string.Empty;
+        public int AddressId { get; set; }
 
-        public string Location { get; set; } = string.Empty;
-
-        public double? Latitude { get; set; }
-
-        public double? Longitude { get; set; }
+        [ForeignKey("AddressId")]
+        public Address Address { get; set; } = null!;
 
         public int Priority { get; set; } // For priority queue
     }

@@ -41,15 +41,15 @@
         <div class="col-md-8">
             <form asp-action="Create" method="post" enctype="multipart/form-data">
                 <div class="mb-3">
-                    <label for="Address_Street" class="form-label"><i class="bi bi-geo-alt"></i> Street</label>
-                    <input type="text" class="form-control" id="Address_Street" name="Address.Street" placeholder="Enter street address" required>
+                    <input type="text" class="form-control" id="Address" name="Address" placeholder="Enter street address, landmark, or area description" required>
                 </div>
 
-                <div class="mb-3">
-                    <label for="Address_City" class="form-label"><i class="bi bi-geo-alt"></i> City</label>
-                    <input type="text" class="form-control" id="Address_City" name="Address.City" placeholder="Enter city" required>
-                </div>
-
+                @if (string.IsNullOrEmpty(ViewBag.GoogleMapsApiKey as string))
+                {
+                    <div class="alert alert-warning">
+                        Location autocomplete is currently unavailable. Please enter your address manually.
+                    </div>
+                }
                 <!-- Hidden latitude and longitude fields for Google Maps API -->
                 <input type="hidden" id="Latitude" name="Latitude" />
                 <input type="hidden" id="Longitude" name="Longitude" />

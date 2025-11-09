@@ -10,6 +10,7 @@ namespace Municipality_Application.Models
         [Required]
         public string Street { get; set; } = string.Empty;
 
+        public string? Suburb { get; set; }
         public string? City { get; set; }
         public string? Province { get; set; }
         public string? PostalCode { get; set; }
