@@ -1,4 +1,4 @@
-﻿@model Municipality_Application.Models.Report
+﻿@model Municipality_Application.ViewModels.ReportConfirmationViewModel
 
 @{
     ViewData["Title"] = "Report Submitted - MunicipalConnect";
@@ -12,14 +12,27 @@
                     <h2 class="card-title">Report Submitted Successfully</h2>
                     <p class="card-text">Thank you for submitting your report. Your report details are:</p>
                     <h3 class="text-primary">Report ID: @Model.Id</h3>
-                    <p><strong>Category:</strong> <span id="categoryName"></span></p>
+                    <p><strong>Category:</strong> @Model.CategoryName</p>
                     <p><strong>Description:</strong> @Model.Description</p>
                     <p><strong>Reported At:</strong> @Model.ReportedAt.ToLocalTime().ToString("g")</p>
                     <p><strong>Status:</strong> @Model.Status</p>
-                    <p><strong>Address:</strong> @Model.Address</p>
-                    @if (Model.Latitude.HasValue && Model.Longitude.HasValue)
+                    <p>
+                        <strong>Address:</strong>
+                        @if (Model.Address != null)
+                        {
+                            if (!string.IsNullOrWhiteSpace(Model.Address.FormattedAddress))
+                            {
+                                @Model.Address.FormattedAddress
+                            }
+                            else
+                            {
+                                @($"{Model.Address.Street}, {Model.Address.City}, {Model.Address.Province}, {Model.Address.PostalCode}, {Model.Address.Country}")
+                            }
+                        }
+                    </p>
+                    @if (Model.Address?.Latitude != null && Model.Address?.Longitude != null)
                     {
-                        <p><strong>Location:</strong> Lat: @Model.Latitude, Long: @Model.Longitude</p>
+                        <p><strong>Location:</strong> Lat: @Model.Address.Latitude, Long: @Model.Address.Longitude</p>
                     }
                     @if (!string.IsNullOrEmpty(Model.PhoneNumber))
                     {
@@ -38,7 +51,6 @@
                                 @foreach (var attachment in Model.Attachments)
                                 {
                                     <li>
-                                        @* <a href="@Url.Content(attachment.FilePath)" target="_blank"> *@
                                         <a href="@Url.Content(attachment.FilePath)" download="@attachment.FileName">
                                             @attachment.FileName
                                         </a>
@@ -55,24 +67,3 @@
         </div>
     </div>
 </div>
-
-@section Scripts {
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const categoryId = @Model.CategoryId;
-            const categoryName = getCategoryName(categoryId);
-            document.getElementById('categoryName').textContent = categoryName;
-        });
-
-        function getCategoryName(categoryId) {
-            switch (categoryId) {
-                case 1: return 'Roads';
-                case 2: return 'Water';
-                case 3: return 'Electricity';
-                case 4: return 'Sanitation';
-                case 5: return 'Other';
-                default: return 'Unknown';
-            }
-        }
-    </script>
-}

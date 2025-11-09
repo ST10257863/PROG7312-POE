@@ -32,40 +32,28 @@ namespace Municipality_Application.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(Report report, List<IFormFile> files)
+        public async Task<IActionResult> Create(ReportCreateViewModel model)
         {
-            if (!double.TryParse(Request.Form["Latitude"], System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var lat))
-                report.Latitude = null;
-            else
-                report.Latitude = lat;
-            if (!double.TryParse(Request.Form["Longitude"], System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var lng))
-                report.Longitude = null;
-            else
-                report.Longitude = lng;
             if (!ModelState.IsValid)
             {
-                foreach (var key in ModelState.Keys)
-                {
-                    var errors = ModelState[key].Errors;
-                    foreach (var error in errors)
-                    {
-                        System.Diagnostics.Debug.WriteLine($"{key}: {error.ErrorMessage}");
-                    }
-                }
                 ViewBag.Categories = await _categoryRepository.GetAllCategoriesAsync();
-                return View("Index", report);
+                return View("Index", model);
             }
+
+            // Map ViewModel to Domain Model using a mapper
+            var report = ReportMapper.ToDomainModel(model);
 
             try
             {
-                var savedReport = await _reportService.SubmitReportAsync(report, files);
+                // Service handles business logic and attachments
+                var savedReport = await _reportService.SubmitReportAsync(report, model.Files ?? new List<IFormFile>());
                 return RedirectToAction("Confirmation", new { id = savedReport.Id });
             }
             catch (Exception)
             {
                 ModelState.AddModelError("", "An error occurred while saving the report. Please try again.");
                 ViewBag.Categories = await _categoryRepository.GetAllCategoriesAsync();
-                return View("Index", report);
+                return View("Index", model);
             }
         }
 

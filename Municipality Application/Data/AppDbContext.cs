@@ -13,6 +13,7 @@ namespace Municipality_Application.Data
         public DbSet<Report> Reports { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<EventSearchFrequency> EventSearchFrequencies { get; set; }
+        public DbSet<Address> Addresses { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -34,6 +35,12 @@ namespace Municipality_Application.Data
                 .WithMany()
                 .HasForeignKey(i => i.UserId)
                 .OnDelete(DeleteBehavior.SetNull);
+
+            builder.Entity<Report>()
+                .HasOne(r => r.Address)
+                .WithMany()
+                .HasForeignKey(r => r.AddressId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }
