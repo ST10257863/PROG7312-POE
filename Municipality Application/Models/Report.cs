@@ -19,11 +19,11 @@ namespace Municipality_Application.Models
 
         public ICollection<Attachment>? Attachments { get; set; }
 
-        public double? Latitude { get; set; }
+        [Required]
+        public int AddressId { get; set; }
 
-        public double? Longitude { get; set; }
-
-        public required string Address { get; set; }
+        [ForeignKey("AddressId")]
+        public Address Address { get; set; } = null!;
 
         public Guid? UserId { get; set; }
 
