@@ -1,5 +1,52 @@
-﻿@{
+﻿@model Municipality_Application.ViewModels.ServiceRequestStatusPageViewModel
+
+@{
     ViewData["Title"] = "Service Request Status";
 }
-<h1>@ViewData["Title"]</h1>
-<p>Sorry, Service Request Status is still under construction</p>
+
+<div class="container mt-4">
+    <h2>Service Request Status</h2>
+    <form method="get" class="row g-3 mb-4">
+        <div class="col-md-3">
+            <input type="text" name="SearchTitle" value="@Model.SearchTitle" class="form-control" placeholder="Search by description" />
+        </div>
+        <div class="col-md-3">
+            <input type="text" name="SearchArea" value="@Model.SearchArea" class="form-control" placeholder="Search by area" />
+        </div>
+        <div class="col-md-2">
+            <input type="date" name="StartDate" value="@(Model.StartDate?.ToString("yyyy-MM-dd"))" class="form-control" />
+        </div>
+        <div class="col-md-2">
+            <input type="date" name="EndDate" value="@(Model.EndDate?.ToString("yyyy-MM-dd"))" class="form-control" />
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary w-100">Search</button>
+        </div>
+    </form>
+
+    <table class="table table-bordered table-hover">
+        <thead>
+            <tr>
+                <th>Report ID</th>
+                <th>Description</th>
+                <th>Address</th>
+                <th>Date Reported</th>
+                <th>Status</th>
+                <th>Category</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var report in Model.Results)
+            {
+                <tr>
+                    <td>@report.Id</td>
+                    <td>@report.Description</td>
+                    <td>@report.Address</td>
+                    <td>@report.ReportedAt.ToString("yyyy-MM-dd")</td>
+                    <td>@report.Status</td>
+                    <td>@report.Category</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
