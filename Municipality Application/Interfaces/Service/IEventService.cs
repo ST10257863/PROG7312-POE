@@ -1,6 +1,6 @@
 ﻿using Municipality_Application.Models;
 
-namespace Municipality_Application.Interfaces
+namespace Municipality_Application.Interfaces.Service
 {
     /// <summary>
     /// Provides higher-level event operations such as filtering, recommendations, and category retrieval.

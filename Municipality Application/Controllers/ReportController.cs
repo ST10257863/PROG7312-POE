@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Municipality_Application.Interfaces.Service;
 
 namespace Municipality_Application.Controllers
 {

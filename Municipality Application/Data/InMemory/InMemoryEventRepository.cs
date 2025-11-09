@@ -2,7 +2,7 @@ using Municipality_Application.Interfaces;
 using Municipality_Application.Models;
 using System.Collections.Concurrent;
 
-namespace Municipality_Application.Data
+namespace Municipality_Application.Data.InMemory
 {
     /// <summary>
     /// In-memory implementation of <see cref="IEventRepository"/> for managing event data during application runtime.

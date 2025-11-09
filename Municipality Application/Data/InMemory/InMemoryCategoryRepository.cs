@@ -2,7 +2,7 @@ using Municipality_Application.Interfaces;
 using Municipality_Application.Models;
 using System.Collections.Concurrent;
 
-namespace Municipality_Application.Data
+namespace Municipality_Application.Data.InMemory
 {
     /// <summary>
     /// In-memory implementation of <see cref="ICategoryRepository"/> for managing category data during application runtime.

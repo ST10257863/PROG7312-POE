@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
-using Municipality_Application.Interfaces;
 using Microsoft.Extensions.Configuration;
 using System.Threading.Tasks;
+using Municipality_Application.Interfaces.Service;
 
 namespace Municipality_Application.Controllers
 {

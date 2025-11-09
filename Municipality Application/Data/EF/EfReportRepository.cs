@@ -2,7 +2,7 @@
 using Municipality_Application.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace Municipality_Application.Data
+namespace Municipality_Application.Data.EF
 {
     /// <summary>
     /// Entity Framework Core implementation of <see cref="IReportRepository"/> for managing report data in the database.

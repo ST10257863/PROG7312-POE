@@ -1,4 +1,5 @@
 ﻿using Municipality_Application.Interfaces;
+using Municipality_Application.Interfaces.Service;
 using Municipality_Application.Models;
 
 namespace Municipality_Application.Services

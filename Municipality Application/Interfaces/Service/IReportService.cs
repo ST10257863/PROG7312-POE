@@ -1,6 +1,6 @@
 ﻿using Municipality_Application.Models;
 
-namespace Municipality_Application.Interfaces
+namespace Municipality_Application.Interfaces.Service
 {
     /// <summary>
     /// Provides higher-level report operations such as submission, retrieval, modification, and removal.

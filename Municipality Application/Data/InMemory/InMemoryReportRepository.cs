@@ -2,7 +2,7 @@
 using Municipality_Application.Models;
 using System.Collections.Concurrent;
 
-namespace Municipality_Application.Data
+namespace Municipality_Application.Data.InMemory
 {
     /// <summary>
     /// In-memory implementation of <see cref="IReportRepository"/> for managing report and attachment data during application runtime.
