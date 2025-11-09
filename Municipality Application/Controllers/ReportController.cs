@@ -64,7 +64,8 @@ namespace Municipality_Application.Controllers
             {
                 return NotFound();
             }
-            return View("Confirmation", report);
+            var viewModel = ReportMapper.ToConfirmationViewModel(report);
+            return View("Confirmation", viewModel);
         }
 
         public async Task<IActionResult> ServiceRequestStatus(ServiceRequestStatusPageViewModel model)

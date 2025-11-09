@@ -53,6 +53,7 @@ namespace Municipality_Application.Mappers
             return new AddressViewModel
             {
                 Street = address.Street,
+                Suburb = address.Suburb,
                 City = address.City,
                 Province = address.Province,
                 PostalCode = address.PostalCode,
@@ -60,6 +61,28 @@ namespace Municipality_Application.Mappers
                 Latitude = address.Latitude,
                 Longitude = address.Longitude,
                 FormattedAddress = address.FormattedAddress
+            };
+        }
+
+        public static ReportConfirmationViewModel ToConfirmationViewModel(Report report)
+        {
+            return new ReportConfirmationViewModel
+            {
+                Id = report.Id,
+                CategoryName = report.Category?.Name ?? string.Empty,
+                Description = report.Description,
+                ReportedAt = report.ReportedAt,
+                Status = report.Status.ToString(),
+                Address = ToAddressViewModel(report.Address),
+                PhoneNumber = report.PhoneNumber,
+                Email = report.Email,
+                Attachments = report.Attachments?
+                    .Select(a => new AttachmentViewModel
+                    {
+                        FileName = a.FileName,
+                        FilePath = a.FilePath
+                    })
+                    .ToList() ?? new List<AttachmentViewModel>()
             };
         }
     }
