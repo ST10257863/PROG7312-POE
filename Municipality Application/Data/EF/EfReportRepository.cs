@@ -109,5 +109,25 @@ namespace Municipality_Application.Data.EF
             await _dbContext.SaveChangesAsync();
             return true;
         }
+
+        public async Task<IEnumerable<Report>> GetFilteredReportsAsync(string? searchTitle, string? searchArea, DateTime? startDate, DateTime? endDate)
+        {
+            var query = _dbContext.Reports
+                .Include(r => r.Attachments)
+                .Include(r => r.Category)
+                .Include(r => r.User)
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(searchTitle))
+                query = query.Where(r => r.Description.Contains(searchTitle));
+            if (!string.IsNullOrWhiteSpace(searchArea))
+                query = query.Where(r => r.Address.Contains(searchArea));
+            if (startDate.HasValue)
+                query = query.Where(r => r.ReportedAt >= startDate.Value);
+            if (endDate.HasValue)
+                query = query.Where(r => r.ReportedAt <= endDate.Value);
+
+            return await query.ToListAsync();
+        }
     }
 }

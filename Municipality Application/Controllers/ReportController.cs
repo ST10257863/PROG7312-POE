@@ -1,11 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Municipality_Application.Interfaces;
 using Municipality_Application.Models;
-using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Municipality_Application.Interfaces.Service;
+using Municipality_Application.Mappers;
+using Municipality_Application.ViewModels;
 
 namespace Municipality_Application.Controllers
 {
@@ -15,14 +13,6 @@ namespace Municipality_Application.Controllers
         private readonly IReportService _reportService;
         private readonly ICategoryRepository _categoryRepository;
 
-        public string GoogleMapsApiKey { get; }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ReportController"/> class.
-        /// </summary>
-        /// <param name="reportService">The report service instance.</param>
-        /// <param name="config">The configuration instance.</param>
-        /// <param name="categoryRepository">The category repository instance.</param>
         public ReportController(IReportService reportService, IConfiguration config, ICategoryRepository categoryRepository)
         {
             _reportService = reportService;
@@ -30,10 +20,6 @@ namespace Municipality_Application.Controllers
             _categoryRepository = categoryRepository;
         }
 
-        /// <summary>
-        /// Displays the form for reporting a new issue.
-        /// </summary>
-        /// <returns>The report issue view.</returns>
         public async Task<IActionResult> Index()
         {
             var googleMapsKey = _config["ApiKeys:GoogleMaps"];
@@ -45,23 +31,6 @@ namespace Municipality_Application.Controllers
             return View();
         }
 
-        /// <summary>
-        /// Displays the service request status view.
-        /// </summary>
-        /// <returns>The service request status view.</returns>
-        public IActionResult ServiceRequestStatus()
-        {
-            return View();
-        }
-
-        /// <summary>
-        /// Handles the submission of a new issue report, including file attachments and location coordinates.
-        /// </summary>
-        /// <param name="report">The report data submitted by the user.</param>
-        /// <param name="files">The list of files attached to the report.</param>
-        /// <returns>
-        /// Redirects to the confirmation page if successful; otherwise, redisplays the form with validation errors.
-        /// </returns>
         [HttpPost]
         public async Task<IActionResult> Create(Report report, List<IFormFile> files)
         {
@@ -100,13 +69,6 @@ namespace Municipality_Application.Controllers
             }
         }
 
-        /// <summary>
-        /// Displays the confirmation page for a submitted report.
-        /// </summary>
-        /// <param name="id">The unique identifier of the report.</param>
-        /// <returns>
-        /// The confirmation view with report details if found; otherwise, a 404 Not Found result.
-        /// </returns>
         public async Task<IActionResult> Confirmation(Guid id)
         {
             var report = await _reportService.GetReportDetailsAsync(id);
@@ -115,6 +77,18 @@ namespace Municipality_Application.Controllers
                 return NotFound();
             }
             return View("Confirmation", report);
+        }
+
+        public async Task<IActionResult> ServiceRequestStatus(ServiceRequestStatusPageViewModel model)
+        {
+            var reports = await _reportService.ListReportsFilteredAsync(
+                model.SearchTitle,
+                model.SearchArea,
+                model.StartDate,
+                model.EndDate);
+
+            model.Results = reports.Select(ReportMapper.ToViewModel).ToList();
+            return View(model);
         }
     }
 }

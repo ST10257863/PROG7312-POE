@@ -108,5 +108,10 @@ namespace Municipality_Application.Services
         {
             return await _reportRepository.DeleteReportAsync(id);
         }
+
+        public async Task<IEnumerable<Report>> ListReportsFilteredAsync(string? searchTitle, string? searchArea, DateTime? startDate, DateTime? endDate)
+        {
+            return await _reportRepository.GetFilteredReportsAsync(searchTitle, searchArea, startDate, endDate);
+        }
     }
 }

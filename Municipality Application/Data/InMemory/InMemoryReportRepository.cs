@@ -92,5 +92,21 @@ namespace Municipality_Application.Data.InMemory
             _attachments.TryRemove(id, out _);
             return Task.FromResult(removed);
         }
+
+        public Task<IEnumerable<Report>> GetFilteredReportsAsync(string? searchTitle, string? searchArea, DateTime? startDate, DateTime? endDate)
+        {
+            var reports = _reports.Values.AsEnumerable();
+
+            if (!string.IsNullOrWhiteSpace(searchTitle))
+                reports = reports.Where(r => r.Description.Contains(searchTitle, StringComparison.OrdinalIgnoreCase));
+            if (!string.IsNullOrWhiteSpace(searchArea))
+                reports = reports.Where(r => r.Address.Contains(searchArea, StringComparison.OrdinalIgnoreCase));
+            if (startDate.HasValue)
+                reports = reports.Where(r => r.ReportedAt >= startDate.Value);
+            if (endDate.HasValue)
+                reports = reports.Where(r => r.ReportedAt <= endDate.Value);
+
+            return Task.FromResult(reports);
+        }
     }
 }
