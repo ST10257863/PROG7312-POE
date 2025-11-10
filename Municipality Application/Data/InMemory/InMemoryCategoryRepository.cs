@@ -22,19 +22,21 @@ namespace Municipality_Application.Data.InMemory
         }
 
         /// <summary>
-        /// Seeds the in-memory store with default categories if none exist.
+        /// Sets all categories in the in-memory store, typically used by the data seeder.
         /// </summary>
+        /// <param name="categories">The categories to set.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
-        public Task SeedDefaultCategoriesAsync()
+        public Task SetAllCategoriesAsync(IEnumerable<Category> categories)
         {
-            if (_categories.IsEmpty)
+            _categories.Clear();
+            _nextId = 1;
+            foreach (var cat in categories)
             {
-                var defaultNames = new[] { "Roads", "Water", "Electricity", "Sanitation", "Other" };
-                foreach (var name in defaultNames)
-                {
-                    var category = new Category { Id = _nextId++, Name = name };
-                    _categories[category.Id] = category;
-                }
+                if (cat.Id == 0)
+                    cat.Id = _nextId++;
+                else
+                    _nextId = Math.Max(_nextId, cat.Id + 1);
+                _categories[cat.Id] = cat;
             }
             return Task.CompletedTask;
         }

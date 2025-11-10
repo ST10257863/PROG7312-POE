@@ -42,4 +42,4 @@ namespace Municipality_Application.Interfaces
         Task<bool> DeleteReportAsync(Guid id);
         Task<IEnumerable<Report>> GetFilteredReportsAsync(string? searchTitle, string? searchArea, DateTime? startDate, DateTime? endDate);
     }
-}       
+}

@@ -53,11 +53,5 @@ namespace Municipality_Application.Interfaces
         /// </summary>
         /// <returns>A dictionary mapping search terms to their frequency.</returns>
         Task<Dictionary<string, int>> GetSearchFrequencyAsync();
-
-        /// <summary>
-        /// Seeds the data store with default events.
-        /// </summary>
-        /// <returns>A task representing the asynchronous operation.</returns>
-        Task SeedDefaultEventsAsync();
     }
 }

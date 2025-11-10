@@ -186,5 +186,41 @@ namespace Municipality_Application.Data.InMemory
 
             return Task.FromResult(reports);
         }
+
+        /// <summary>
+        /// Sets all reports in the repository, used by the data seeder.
+        /// </summary>
+        /// <param name="reports">The reports to set.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        public Task SetAllReportsAsync(IEnumerable<Report> reports)
+        {
+            _reports.Clear();
+            _attachments.Clear();
+            _addresses.Clear();
+            _addressIdCounter = 1;
+
+            foreach (var report in reports)
+            {
+                if (report.Id == Guid.Empty)
+                    report.Id = Guid.NewGuid();
+
+                if (report.Address != null)
+                {
+                    if (report.Address.Id == 0)
+                        report.Address.Id = _addressIdCounter++;
+                    else
+                        _addressIdCounter = Math.Max(_addressIdCounter, report.Address.Id + 1);
+
+                    _addresses[report.Address.Id] = report.Address;
+                    report.AddressId = report.Address.Id;
+                }
+
+                if (report.Attachments != null && report.Attachments.Any())
+                    _attachments[report.Id] = report.Attachments.ToList();
+
+                _reports[report.Id] = report;
+            }
+            return Task.CompletedTask;
+        }
     }
 }
