@@ -7,33 +7,49 @@
 @section Scripts {
     <script src="~/js/google-autocomplete.js"></script>
     <script src="~/js/location-warning.js"></script>
+    <script src="~/js/service-request-filters.js"></script>
     <google-maps-script callback="initGoogleAutocompleteForSearchArea"></google-maps-script>
-    <script>
-        // Wrapper to call the universal autocomplete for the SearchArea field
-        function initGoogleAutocompleteForSearchArea() {
-            window.initGoogleAutocomplete("SearchArea");
-        }
-        window.showLocationWarningIfNeeded('location-warning');
-    </script>
 }
 
 <div class="container mt-4">
     <h2 class="table-title">Service Request Status</h2>
-    <form method="get" class="row g-3 mb-4">
-        <div class="col-md-3">
-            <input type="text" name="SearchTitle" value="@Model.SearchTitle" class="form-control" placeholder="Search by description" />
+    <form method="get" class="mb-4">
+        <div class="row g-3">
+            <!-- First row: Description and Location -->
+            <div class="col-md-4">
+                <input type="text" name="SearchTitle" value="@Model.SearchTitle" class="form-control" placeholder="Search by description" />
+            </div>
+            <div class="col-md-4">
+                <input type="text" id="SearchArea" name="SearchArea" value="@Model.SearchArea" class="form-control" placeholder="Search by area" />
+            </div>
         </div>
-        <div class="col-md-3">
-            <input type="text" id="SearchArea" name="SearchArea" value="@Model.SearchArea" class="form-control" placeholder="Search by area" />
+        <div class="row g-3 mt-2 align-items-end">
+            <!-- Second row: Date range and preset dropdown -->
+            <div class="col-md-3">
+                <label for="StartDate" class="form-label mb-0">From</label>
+                <input type="date" id="StartDate" name="StartDate" value="@(Model.StartDate?.ToString("yyyy-MM-dd"))" class="form-control" />
+            </div>
+            <div class="col-md-3">
+                <label for="EndDate" class="form-label mb-0">To</label>
+                <input type="date" id="EndDate" name="EndDate" value="@(Model.EndDate?.ToString("yyyy-MM-dd"))" class="form-control" />
+            </div>
+            <div class="col-md-3">
+                <label for="DateRangePreset" class="form-label mb-0">Quick Range</label>
+                <select id="DateRangePreset" class="form-select" onchange="setDateRangePreset()">
+                    <option value="">-- Date Range Preset --</option>
+                    <option value="thisMonth">This Month</option>
+                    <option value="lastMonth">Last Month</option>
+                    <option value="last30">Last 30 Days</option>
+                    <option value="thisYear">This Year</option>
+                    <option value="last365">Last 365 Days</option>
+                </select>
+            </div>
+
         </div>
-        <div class="col-md-2">
-            <input type="date" name="StartDate" value="@(Model.StartDate?.ToString("yyyy-MM-dd"))" class="form-control" />
-        </div>
-        <div class="col-md-2">
-            <input type="date" name="EndDate" value="@(Model.EndDate?.ToString("yyyy-MM-dd"))" class="form-control" />
-        </div>
-        <div class="col-md-2">
-            <button type="submit" class="btn btn-primary w-100">Search</button>
+        <div class="row g-3 mt-2 align-items-end">
+            <div class="col-md-3 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary w-100">Search</button>
+            </div>
         </div>
         <div id="location-warning" class="alert alert-warning mt-2" style="display:none;">
             <strong>Location services are currently unavailable.</strong> We apologise for the inconvenience.
