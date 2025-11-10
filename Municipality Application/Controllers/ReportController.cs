@@ -34,6 +34,30 @@ namespace Municipality_Application.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(ReportCreateViewModel model)
         {
+            // Log all model values for debugging
+            System.Diagnostics.Debug.WriteLine("---- ReportCreateViewModel Submission ----");
+            System.Diagnostics.Debug.WriteLine($"Description: {model.Description}");
+            System.Diagnostics.Debug.WriteLine($"CategoryId: {model.CategoryId}");
+            if (model.Address != null)
+            {
+                System.Diagnostics.Debug.WriteLine($"Address.Street: {model.Address.Street}");
+                System.Diagnostics.Debug.WriteLine($"Address.Suburb: {model.Address.Suburb}");
+                System.Diagnostics.Debug.WriteLine($"Address.City: {model.Address.City}");
+                System.Diagnostics.Debug.WriteLine($"Address.Province: {model.Address.Province}");
+                System.Diagnostics.Debug.WriteLine($"Address.PostalCode: {model.Address.PostalCode}");
+                System.Diagnostics.Debug.WriteLine($"Address.Country: {model.Address.Country}");
+                System.Diagnostics.Debug.WriteLine($"Address.Latitude: {model.Address.Latitude}");
+                System.Diagnostics.Debug.WriteLine($"Address.Longitude: {model.Address.Longitude}");
+                System.Diagnostics.Debug.WriteLine($"Address.FormattedAddress: {model.Address.FormattedAddress}");
+            }
+            else
+            {
+                System.Diagnostics.Debug.WriteLine("Address: null");
+            }
+            System.Diagnostics.Debug.WriteLine($"PhoneNumber: {model.PhoneNumber}");
+            System.Diagnostics.Debug.WriteLine($"Email: {model.Email}");
+            System.Diagnostics.Debug.WriteLine($"Files.Count: {model.Files?.Count ?? 0}");
+            System.Diagnostics.Debug.WriteLine("------------------------------------------");
             if (!ModelState.IsValid)
             {
                 ViewBag.Categories = await _categoryRepository.GetAllCategoriesAsync();

@@ -32,6 +32,7 @@ namespace Municipality_Application.Mappers
                 Address = new Address
                 {
                     Street = model.Address.Street,
+                    Suburb = model.Address.Suburb,
                     City = model.Address.City,
                     Province = model.Address.Province,
                     PostalCode = model.Address.PostalCode,
