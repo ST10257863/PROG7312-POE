@@ -12,6 +12,7 @@ namespace Municipality_Application.Data.InMemory
         private readonly ConcurrentDictionary<Guid, Report> _reports = new();
         private readonly ConcurrentDictionary<Guid, List<Attachment>> _attachments = new();
         private readonly ConcurrentDictionary<int, Address> _addresses = new();
+        private readonly ConcurrentDictionary<int, Category> _categories = new();
         private int _addressIdCounter = 1;
 
         /// <summary>
@@ -36,6 +37,10 @@ namespace Municipality_Application.Data.InMemory
                 report.AddressId = report.Address.Id;
             }
 
+            // Handle Category
+            if (report.CategoryId != 0)
+                report.Category = _categories.TryGetValue(report.CategoryId, out var cat) ? cat : null;
+
             if (report.Attachments != null && report.Attachments.Any())
                 _attachments[report.Id] = report.Attachments.ToList();
 
@@ -48,7 +53,7 @@ namespace Municipality_Application.Data.InMemory
         /// </summary>
         /// <param name="id">The report's unique identifier.</param>
         /// <returns>The <see cref="Report"/> entity if found; otherwise, null.</returns>
-        public Task<Report> GetReportByIdAsync(Guid id)
+        public Task<Report?> GetReportByIdAsync(Guid id)
         {
             _reports.TryGetValue(id, out var report);
             if (report != null)
@@ -64,6 +69,10 @@ namespace Municipality_Application.Data.InMemory
                     report.Address = address;
                 else
                     report.Address = null!;
+
+                // Category
+                if (report.CategoryId != 0)
+                    report.Category = _categories.TryGetValue(report.CategoryId, out var cat) ? cat : null;
             }
             return Task.FromResult(report);
         }
@@ -88,6 +97,10 @@ namespace Municipality_Application.Data.InMemory
                     report.Address = address;
                 else
                     report.Address = null!;
+
+                // Category
+                if (report.CategoryId != 0)
+                    report.Category = _categories.TryGetValue(report.CategoryId, out var cat) ? cat : null;
             }
             return Task.FromResult(reports.AsEnumerable());
         }
@@ -112,6 +125,10 @@ namespace Municipality_Application.Data.InMemory
                 _addresses[report.Address.Id] = report.Address;
                 report.AddressId = report.Address.Id;
             }
+
+            // Update Category
+            if (report.CategoryId != 0)
+                report.Category = _categories.TryGetValue(report.CategoryId, out var cat) ? cat : null;
 
             _reports[report.Id] = report;
             if (report.Attachments != null)
@@ -170,18 +187,24 @@ namespace Municipality_Application.Data.InMemory
             if (endDate.HasValue)
                 reports = reports.Where(r => r.ReportedAt <= endDate.Value);
 
-            // Ensure addresses and attachments are populated
+            // Ensure addresses, attachments, and categories are populated
             foreach (var report in reports)
             {
+                // Attachments
                 if (_attachments.TryGetValue(report.Id, out var attachments))
                     report.Attachments = attachments;
                 else
                     report.Attachments = new List<Attachment>();
 
+                // Address
                 if (_addresses.TryGetValue(report.AddressId, out var address))
                     report.Address = address;
                 else
                     report.Address = null!;
+
+                // Category
+                if (report.CategoryId != 0)
+                    report.Category = _categories.TryGetValue(report.CategoryId, out var cat) ? cat : null;
             }
 
             return Task.FromResult(reports);
@@ -215,10 +238,29 @@ namespace Municipality_Application.Data.InMemory
                     report.AddressId = report.Address.Id;
                 }
 
+                // Handle Category
+                if (report.CategoryId != 0)
+                    report.Category = _categories.TryGetValue(report.CategoryId, out var cat) ? cat : null;
+
                 if (report.Attachments != null && report.Attachments.Any())
                     _attachments[report.Id] = report.Attachments.ToList();
 
                 _reports[report.Id] = report;
+            }
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Sets all categories in the repository, used by the data seeder.
+        /// </summary>
+        /// <param name="categories">The categories to set.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        public Task SetAllCategoriesAsync(IEnumerable<Category> categories)
+        {
+            _categories.Clear();
+            foreach (var category in categories)
+            {
+                _categories[category.Id] = category;
             }
             return Task.CompletedTask;
         }

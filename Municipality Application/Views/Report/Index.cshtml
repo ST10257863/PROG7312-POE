@@ -44,9 +44,9 @@
                     <label for="CategoryId" class="form-label"><i class="bi bi-list"></i> Issue Category</label>
                     <select class="form-select" id="CategoryId" name="CategoryId" required>
                         <option value="" selected disabled>Select a category</option>
-                        @if (ViewBag.Categories != null)
+                        @if (Model.Categories != null && Model.Categories.Any())
                         {
-                            foreach (var category in ViewBag.Categories)
+                            foreach (var category in Model.Categories)
                             {
                                 <option value="@category.Id">@category.Name</option>
                             }

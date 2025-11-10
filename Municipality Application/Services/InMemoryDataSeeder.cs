@@ -31,7 +31,7 @@ namespace Municipality_Application.Services
             await (_eventRepository as dynamic).SetAllEventsAsync(events);
 
             var reports = GenerateReports(categories, addresses);
-            await (_reportRepository as dynamic).SetAllReportsAsync(reports);
+            await (_reportRepository as dynamic).SetAllCategoriesAsync(categories);
         }
 
         private List<Category> GenerateCategories()
@@ -138,6 +138,7 @@ namespace Municipality_Application.Services
                     Id = Guid.NewGuid(),
                     ReportedAt = date,
                     CategoryId = category.Id,
+                    Category = category,
                     Description = $"Auto-generated report for {category.Name.ToLower()}",
                     AddressId = address.Id,
                     Address = address,

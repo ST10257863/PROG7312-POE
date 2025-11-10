@@ -22,13 +22,12 @@ namespace Municipality_Application.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var googleMapsKey = _config["ApiKeys:GoogleMaps"];
-            ViewBag.GoogleMapsApiKey = string.IsNullOrWhiteSpace(googleMapsKey) ? null : googleMapsKey;
-
             var categories = await _categoryRepository.GetAllCategoriesAsync();
-            ViewBag.Categories = categories;
-
-            return View();
+            var model = new ReportCreateViewModel
+            {
+                Categories = categories
+            };
+            return View(model);
         }
 
         [HttpPost]
@@ -60,7 +59,7 @@ namespace Municipality_Application.Controllers
             System.Diagnostics.Debug.WriteLine("------------------------------------------");
             if (!ModelState.IsValid)
             {
-                ViewBag.Categories = await _categoryRepository.GetAllCategoriesAsync();
+                model.Categories = await _categoryRepository.GetAllCategoriesAsync();
                 return View("Index", model);
             }
 
@@ -76,7 +75,7 @@ namespace Municipality_Application.Controllers
             catch (Exception)
             {
                 ModelState.AddModelError("", "An error occurred while saving the report. Please try again.");
-                ViewBag.Categories = await _categoryRepository.GetAllCategoriesAsync();
+                model.Categories = await _categoryRepository.GetAllCategoriesAsync();
                 return View("Index", model);
             }
         }

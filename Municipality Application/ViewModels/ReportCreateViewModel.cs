@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Municipality_Application.Models;
 
 namespace Municipality_Application.ViewModels
 {
@@ -16,5 +17,6 @@ namespace Municipality_Application.ViewModels
         public string? PhoneNumber { get; set; }
         public string? Email { get; set; }
         public List<IFormFile>? Files { get; set; }
+        public IEnumerable<Category>? Categories { get; set; }
     }
 }
