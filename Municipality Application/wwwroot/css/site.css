@@ -97,6 +97,24 @@ body {
     cursor: pointer;
 }
 
+.event-card {
+    height: 160px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+    .event-card .card-body {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+.event-meta {
+    margin-top: auto;
+}
+
+
 /* Footer */
 .footer {
     flex-shrink: 0;

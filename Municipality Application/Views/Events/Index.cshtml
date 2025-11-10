@@ -66,15 +66,19 @@
             @foreach (var ev in recommendations)
             {
                 <div class="col-md-4 mb-2">
-                    <div class="card">
+                    <div class="card event-card">
                         <div class="card-body">
                             <h5 class="card-title">@ev.Title</h5>
                             <p class="card-text">@ev.Description</p>
-                            <span class="badge bg-info">@ev.Category</span>
-                            <span class="badge bg-secondary">@ev.Date.ToShortDateString()</span>
-                            <span class="badge bg-light text-dark">
-                                @ev.Address?.DisplayAddress
-                            </span>
+                            <div class="event-meta">
+                                <span class="badge bg-info">@ev.Category</span>
+                                <span class="badge bg-secondary">@ev.Date.ToString("yyyy-MM-dd")</span>
+                                <div class="mt-2">
+                                    <span class="badge bg-light text-dark">
+                                        @ev.Address?.DisplayAddress
+                                    </span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -97,15 +101,19 @@
             @foreach (var ev in Model.Events)
             {
                 <div class="col-md-4 mb-2">
-                    <div class="card">
+                    <div class="card event-card">
                         <div class="card-body">
                             <h5 class="card-title">@ev.Title</h5>
                             <p class="card-text">@ev.Description</p>
-                            <span class="badge bg-info">@ev.Category</span>
-                            <span class="badge bg-secondary">@ev.Date.ToShortDateString()</span>
-                            <span class="badge bg-light text-dark">
-                                @ev.Address?.DisplayAddress
-                            </span>
+                            <div class="event-meta">
+                                <span class="badge bg-info">@ev.Category</span>
+                                <span class="badge bg-secondary">@ev.Date.ToString("yyyy-MM-dd")</span>
+                                <div class="mt-2">
+                                    <span class="badge bg-light text-dark">
+                                        @ev.Address?.DisplayAddress
+                                    </span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
