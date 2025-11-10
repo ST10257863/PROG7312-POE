@@ -13,7 +13,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 
 // Toggle this flag to switch between in-memory and EF Core modes
-bool useInMemory = true; // Set to true for in-memory mode
+bool useInMemory = false; // Set to true for in-memory mode
 
 if (useInMemory)
 {

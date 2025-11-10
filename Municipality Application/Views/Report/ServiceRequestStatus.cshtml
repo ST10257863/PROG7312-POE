@@ -18,7 +18,7 @@
 }
 
 <div class="container mt-4">
-    <h2>Service Request Status</h2>
+    <h2 class="table-title">Service Request Status</h2>
     <form method="get" class="row g-3 mb-4">
         <div class="col-md-3">
             <input type="text" name="SearchTitle" value="@Model.SearchTitle" class="form-control" placeholder="Search by description" />
@@ -42,29 +42,39 @@
         <input type="hidden" id="SearchArea_Longitude" name="SearchArea.Longitude" />
     </form>
 
-    <table class="table table-bordered table-hover">
-        <thead>
-            <tr>
-                <th>Report ID</th>
-                <th>Description</th>
-                <th>Address</th>
-                <th>Date Reported</th>
-                <th>Status</th>
-                <th>Category</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var report in Model.Results)
-            {
+    <div class="table-responsive">
+        <table class="table custom-table table-bordered table-hover align-middle">
+            <thead>
                 <tr>
-                    <td>@report.Id</td>
-                    <td>@report.Description</td>
-                    <td>@report.Address</td>
-                    <td>@report.ReportedAt.ToString("yyyy-MM-dd")</td>
-                    <td>@report.Status</td>
-                    <td>@report.Category</td>
+                    <th style="width: 60px;">#</th>
+                    <th>Description</th>
+                    <th>Address</th>
+                    <th>Date Reported</th>
+                    <th>Status</th>
+                    <th>Category</th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @{
+                    int rowNumber = 1;
+                    foreach (var report in Model.Results)
+                    {
+                        <tr>
+                            <td>@rowNumber</td>
+                            <td title="@report.Description">@report.Description</td>
+                            <td title="@report.Address">@report.Address</td>
+                            <td>@report.ReportedAt.ToString("yyyy-MM-dd")</td>
+                            <td>
+                                <span class="badge @(report.Status == "Resolved" ? "bg-success" : report.Status == "In Progress" ? "bg-warning text-dark" : "bg-secondary")">
+                                    @report.Status
+                                </span>
+                            </td>
+                            <td title="@report.Category">@report.Category</td>
+                        </tr>
+                        rowNumber++;
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
 </div>
