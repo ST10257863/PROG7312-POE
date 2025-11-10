@@ -32,6 +32,7 @@ namespace Municipality_Application.Services
 
             var reports = GenerateReports(categories, addresses);
             await (_reportRepository as dynamic).SetAllCategoriesAsync(categories);
+            await (_reportRepository as dynamic).SetAllReportsAsync(reports);
         }
 
         private List<Category> GenerateCategories()
