@@ -4,6 +4,19 @@
     ViewData["Title"] = "Service Request Status";
 }
 
+@section Scripts {
+    <script src="~/js/google-autocomplete.js"></script>
+    <script src="~/js/location-warning.js"></script>
+    <google-maps-script callback="initGoogleAutocompleteForSearchArea"></google-maps-script>
+    <script>
+        // Wrapper to call the universal autocomplete for the SearchArea field
+        function initGoogleAutocompleteForSearchArea() {
+            window.initGoogleAutocomplete("SearchArea");
+        }
+        window.showLocationWarningIfNeeded('location-warning');
+    </script>
+}
+
 <div class="container mt-4">
     <h2>Service Request Status</h2>
     <form method="get" class="row g-3 mb-4">
@@ -11,7 +24,7 @@
             <input type="text" name="SearchTitle" value="@Model.SearchTitle" class="form-control" placeholder="Search by description" />
         </div>
         <div class="col-md-3">
-            <input type="text" name="SearchArea" value="@Model.SearchArea" class="form-control" placeholder="Search by area" />
+            <input type="text" id="SearchArea" name="SearchArea" value="@Model.SearchArea" class="form-control" placeholder="Search by area" />
         </div>
         <div class="col-md-2">
             <input type="date" name="StartDate" value="@(Model.StartDate?.ToString("yyyy-MM-dd"))" class="form-control" />
@@ -22,6 +35,11 @@
         <div class="col-md-2">
             <button type="submit" class="btn btn-primary w-100">Search</button>
         </div>
+        <div id="location-warning" class="alert alert-warning mt-2" style="display:none;">
+            <strong>Location services are currently unavailable.</strong> We apologise for the inconvenience.
+        </div>
+        <input type="hidden" id="SearchArea_Latitude" name="SearchArea.Latitude" />
+        <input type="hidden" id="SearchArea_Longitude" name="SearchArea.Longitude" />
     </form>
 
     <table class="table table-bordered table-hover">

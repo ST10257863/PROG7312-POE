@@ -4,7 +4,7 @@ using Municipality_Application.Data;
 using Municipality_Application.Data.InMemory;
 using Municipality_Application.Interfaces;
 using Municipality_Application.Interfaces.Service;
-using Municipality_Application.Services; // Add this for EventService
+using Municipality_Application.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 

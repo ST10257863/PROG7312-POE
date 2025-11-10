@@ -1,17 +1,21 @@
 ﻿@model Municipality_Application.ViewModels.ReportCreateViewModel
 
 @{
-    ViewData["Title"] = "Report Issue - MunicipalConnect";
+    ViewData["Title"] = "Report Issue";
 }
 
 @section Scripts
 {
     <script src="~/js/report-form.js"></script>
     <script src="~/js/google-autocomplete.js"></script>
-    @if (!string.IsNullOrEmpty(ViewBag.GoogleMapsApiKey as string))
-    {
-        <script src="https://maps.googleapis.com/maps/api/js?key=@ViewBag.GoogleMapsApiKey&libraries=places&callback=initGoogleAutocomplete" async defer></script>
-    }
+    <script src="~/js/location-warning.js"></script>
+    <google-maps-script callback="initGoogleAutocompleteForReportAddress"></google-maps-script>
+    <script>
+        function initGoogleAutocompleteForReportAddress() {
+            window.initGoogleAutocomplete("Address");
+        }
+        window.showLocationWarningIfNeeded('location-warning');
+    </script>
 }
 
 <div class="container mt-4">
@@ -20,15 +24,11 @@
         <div class="col-md-8">
             <form asp-action="Create" method="post" enctype="multipart/form-data">
                 <div class="mb-3">
-                    <input type="text" class="form-control" id="Address" name="Address" placeholder="Enter street address, landmark, or area description" required>
+                    <input type="text" class="form-control" id="Address" name="Address" placeholder="Enter street address, landmark, or area description" required />
                 </div>
-
-                @if (string.IsNullOrEmpty(ViewBag.GoogleMapsApiKey as string))
-                {
-                    <div class="alert alert-warning">
-                        Location autocomplete is currently unavailable. Please enter your address manually.
-                    </div>
-                }
+                <div id="location-warning" class="alert alert-warning mt-2" style="display:none;">
+                    <strong>Location services are currently unavailable.</strong> We apologise for the inconvenience.
+                </div>
                 <!-- Hidden fields for Google Maps API -->
                 <input type="hidden" id="Address_Street" name="Address.Street" />
                 <input type="hidden" id="Address_Suburb" name="Address.Suburb" />

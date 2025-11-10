@@ -9,7 +9,19 @@
         || Model.Date != null
         || !string.IsNullOrWhiteSpace(Model.Latitude?.ToString())
         || !string.IsNullOrWhiteSpace(Model.Longitude?.ToString());
-    bool locationServicesAvailable = !string.IsNullOrEmpty(ViewBag.GoogleMapsApiKey as string);
+}
+
+@section Scripts {
+    <script src="~/js/event-filters.js"></script>
+    <script src="~/js/google-autocomplete.js"></script>
+    <script src="~/js/location-warning.js"></script>
+    <google-maps-script callback="initGoogleAutocompleteForEventAddress"></google-maps-script>
+    <script>
+        function initGoogleAutocompleteForEventAddress() {
+            window.initGoogleAutocomplete("EventAddress");
+        }
+        window.showLocationWarningIfNeeded('location-warning');
+    </script>
 }
 
 <div class="container mt-4">
@@ -32,20 +44,19 @@
         </div>
         <div class="col-md-3 d-flex gap-2">
             <button type="submit" class="btn btn-primary w-100">Search</button>
-            <button type="button" class="btn btn-outline-secondary w-100" onclick="clearEventFilters()">Clear Filter</button>
+            <button type="button" class="btn btn-outline-secondary w-100"
+                    onclick="clearEventFilters('eventSearchForm', 'EventAddress', 'EventAddress_Latitude', 'EventAddress_Longitude', '@Url.Action("Index", "Events")')">
+                Clear Filter
+            </button>
         </div>
+
         <div class="mb-3">
             <label for="EventAddress" class="form-label"><i class="bi bi-geo-alt"></i> Event Location</label>
-            <input type="text" class="form-control" id="EventAddress" name="Address" placeholder="Enter event address or location" value="@Model.Address" @(locationServicesAvailable ? "" : "disabled") />
+            <input type="text" class="form-control" id="EventAddress" name="Address" placeholder="Enter event address or location" value="@Model.Address" />
         </div>
-        @if (!locationServicesAvailable)
-        {
-            <div class="alert alert-warning mt-2">
-                <strong>Location services are currently unavailable.</strong> We apologise for the inconvenience.
-            </div>
-        }
-        <input type="hidden" id="Latitude" name="Latitude" value="@Model.Latitude" />
-        <input type="hidden" id="Longitude" name="Longitude" value="@Model.Longitude" />
+        <div id="location-warning" class="alert alert-warning mt-2" style="display:none;">
+            <strong>Location services are currently unavailable.</strong> We apologise for the inconvenience.
+        </div>
     </form>
 
     @if (!hasSearch)
@@ -102,36 +113,3 @@
         }
     </div>
 </div>
-
-@section Scripts {
-    @if (!string.IsNullOrEmpty(ViewBag.GoogleMapsApiKey as string))
-    {
-        <script src="https://maps.googleapis.com/maps/api/js?key=@ViewBag.GoogleMapsApiKey&libraries=places"></script>
-        <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                var input = document.getElementById('EventAddress');
-                if (input && window.google && google.maps && google.maps.places) {
-                    var autocomplete = new google.maps.places.Autocomplete(input, {
-                        types: ['geocode'],
-                        componentRestrictions: { country: 'za' }
-                    });
-                    autocomplete.addListener('place_changed', function () {
-                        var place = autocomplete.getPlace();
-                        if (place.geometry) {
-                            document.getElementById('Latitude').value = place.geometry.location.lat();
-                            document.getElementById('Longitude').value = place.geometry.location.lng();
-                        }
-                    });
-                }
-            });
-
-            function clearEventFilters() {
-                document.getElementById('eventSearchForm').reset();
-                document.getElementById('EventAddress').value = '';
-                document.getElementById('Latitude').value = '';
-                document.getElementById('Longitude').value = '';
-                window.location.href = '@Url.Action("Index", "Events")';
-            }
-        </script>
-    }
-}
