@@ -73,6 +73,7 @@ namespace Municipality_Application.Controllers
             model.Categories = await _categoryRepository.GetAllCategoriesAsync();
 
             var reports = await _reportService.ListReportsFilteredAsync(
+                model.SearchReportId,
                 model.SearchTitle,
                 model.SearchArea,
                 model.StartDate,
@@ -82,6 +83,17 @@ namespace Municipality_Application.Controllers
 
             model.Results = reports.Select(ReportMapper.ToViewModel).ToList();
             return View(model);
+        }
+
+        public async Task<IActionResult> ServiceRequestStatusInformation(Guid id)
+        {
+            var report = await _reportService.GetReportDetailsAsync(id);
+            if (report == null)
+            {
+                return NotFound();
+            }
+            var viewModel = ReportMapper.ToServiceRequestStatusViewModel(report);
+            return View("ServiceRequestStatusInformation", viewModel);
         }
     }
 }

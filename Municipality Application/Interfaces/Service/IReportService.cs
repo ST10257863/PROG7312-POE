@@ -49,6 +49,6 @@ namespace Municipality_Application.Interfaces.Service
         /// <param name="categoryId">Optional: Filter by category ID.</param>
         /// <param name="status">Optional: Filter by report status.</param>
         /// <returns>An enumerable collection of filtered <see cref="Report"/> objects.</returns>
-        Task<IEnumerable<Report>> ListReportsFilteredAsync(string? searchTitle, string? searchArea, DateTime? startDate, DateTime? endDate, int? categoryId, string? status);
+        Task<IEnumerable<Report>> ListReportsFilteredAsync(string? searchReportId, string? searchTitle, string? searchArea, DateTime? startDate, DateTime? endDate, int? categoryId, string? status);
     }
 }

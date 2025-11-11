@@ -163,7 +163,7 @@ namespace Municipality_Application.Data.InMemory
         /// <summary>
         /// Retrieves filtered reports from the in-memory store, including their addresses and attachments.
         /// </summary>
-        public Task<IEnumerable<Report>> GetFilteredReportsAsync(string? searchTitle, string? searchArea, DateTime? startDate, DateTime? endDate, int? categoryId, string? status)
+        public Task<IEnumerable<Report>> GetFilteredReportsAsync(string? searchReportId, string? searchTitle, string? searchArea, DateTime? startDate, DateTime? endDate, int? categoryId, string? status)
         {
             var reports = _reports.Values.AsEnumerable();
 

@@ -15,14 +15,17 @@
     <h2 class="table-title">Service Request Status</h2>
     <form method="get" class="mb-4">
         <div class="row g-3">
-            <!-- First row: Description, Location, Category, Status -->
-            <div class="col-md-3">
+            <!-- First row: Report ID, Description, Location, Category, Status -->
+            <div class="col-md-2">
+                <input type="text" name="SearchReportId" value="@Model.SearchReportId" class="form-control" placeholder="Search by Report ID" />
+            </div>
+            <div class="col-md-2">
                 <input type="text" name="SearchTitle" value="@Model.SearchTitle" class="form-control" placeholder="Search by description" />
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2">
                 <input type="text" id="SearchArea" name="SearchArea" value="@Model.SearchArea" class="form-control" placeholder="Search by area" />
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2">
                 <select name="CategoryId" class="form-select">
                     <option value="">All Categories</option>
                     @if (Model.Categories != null)
@@ -34,7 +37,7 @@
                     }
                 </select>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2">
                 <select name="Status" class="form-select">
                     <option value="">All Statuses</option>
                     @if (Model.Statuses != null)
@@ -45,6 +48,9 @@
                         }
                     }
                 </select>
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary w-100">Search</button>
             </div>
         </div>
         <div class="row g-3 mt-2 align-items-end">
@@ -66,9 +72,6 @@
                     <option value="thisYear">This Year</option>
                     <option value="last365">Last 365 Days</option>
                 </select>
-            </div>
-            <div class="col-md-3 d-flex align-items-end">
-                <button type="submit" class="btn btn-primary w-100">Search</button>
             </div>
         </div>
         <div id="location-warning" class="alert alert-warning mt-2" style="display:none;">
@@ -95,18 +98,8 @@
                     int rowNumber = 1;
                     foreach (var report in Model.Results)
                     {
-                        <tr>
-                            <td>@rowNumber</td>
-                            <td title="@report.Description">@report.Description</td>
-                            <td title="@report.Address">@report.Address</td>
-                            <td>@report.ReportedAt.ToString("yyyy-MM-dd")</td>
-                            <td>
-                                <span class="badge @(report.Status == "Resolved" ? "bg-success" : report.Status == "In Progress" ? "bg-warning text-dark" : "bg-secondary")">
-                                    @report.Status
-                                </span>
-                            </td>
-                            <td title="@report.Category">@report.Category</td>
-                        </tr>
+                        ViewBag.RowNumber = rowNumber;
+                        @await Html.PartialAsync("_ServiceRequestRow", report)
                         rowNumber++;
                     }
                 }

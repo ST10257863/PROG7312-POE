@@ -162,6 +162,7 @@ namespace Municipality_Application.Data.EF
         /// Retrieves filtered reports from the database, including their addresses.
         /// </summary>
         public async Task<IEnumerable<Report>> GetFilteredReportsAsync(
+            string? searchReportId,
             string? searchTitle,
             string? searchArea,
             DateTime? startDate,
@@ -170,12 +171,24 @@ namespace Municipality_Application.Data.EF
             string? status)
         {
             var query = _dbContext.Reports
-                .AsNoTracking() // Add this for read-only queries
+                .AsNoTracking()
                 .Include(r => r.Attachments)
                 .Include(r => r.Category)
                 .Include(r => r.User)
                 .Include(r => r.Address)
                 .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(searchReportId))
+            {
+                if (Guid.TryParse(searchReportId, out var reportGuid))
+                {
+                    query = query.Where(r => r.Id == reportGuid);
+                }
+                else
+                {
+                    query = query.Where(r => r.Id.ToString().Contains(searchReportId));
+                }
+            }
 
             if (!string.IsNullOrWhiteSpace(searchTitle))
                 query = query.Where(r => r.Description.Contains(searchTitle));

@@ -98,5 +98,19 @@ namespace Municipality_Application.Mappers
                     Text = e == IssueStatus.InProgress ? "In Progress" : e.ToString()
                 });
         }
+
+        public static ServiceRequestStatusViewModel ToServiceRequestStatusViewModel(Report report)
+        {
+            return new ServiceRequestStatusViewModel
+            {
+                Id = report.Id,
+                Description = report.Description,
+                Address = report.Address?.FormattedAddress
+                    ?? $"{report.Address?.Street}, {report.Address?.City}, {report.Address?.Province}, {report.Address?.PostalCode}, {report.Address?.Country}",
+                ReportedAt = report.ReportedAt,
+                Status = report.Status.ToString(),
+                Category = report.Category?.Name
+            };
+        }
     }
 }

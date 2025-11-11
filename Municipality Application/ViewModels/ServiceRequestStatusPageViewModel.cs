@@ -6,6 +6,7 @@ namespace Municipality_Application.ViewModels
     public class ServiceRequestStatusPageViewModel
     {
         // Search/filter properties
+        public string? SearchReportId { get; set; }
         public string? SearchTitle { get; set; }
         public string? SearchArea { get; set; }
         public DateTime? StartDate { get; set; }

@@ -101,9 +101,7 @@ namespace Municipality_Application.Services
         /// <inheritdoc/>
         public async Task<Report?> GetReportDetailsAsync(Guid id)
         {
-            await OrganizeReportsAsync();
-            _reportDictionary.TryGetValue(id, out var report);
-            return report;
+            return await _reportRepository.GetReportByIdAsync(id);
         }
 
         /// <inheritdoc/>
@@ -127,6 +125,7 @@ namespace Municipality_Application.Services
 
         /// <inheritdoc/>
         public async Task<IEnumerable<Report>> ListReportsFilteredAsync(
+            string? searchReportId,
             string? searchTitle,
             string? searchArea,
             DateTime? startDate,
@@ -134,7 +133,7 @@ namespace Municipality_Application.Services
             int? categoryId,
             string? status)
         {
-            return await _reportRepository.GetFilteredReportsAsync(
+            return await _reportRepository.GetFilteredReportsAsync(searchReportId,
                 searchTitle, searchArea, startDate, endDate, categoryId, status);
         }
 

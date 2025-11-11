@@ -43,6 +43,9 @@ namespace Municipality_Application.Data
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.Entity<Report>()
+                .HasIndex(r => r.Id);
+
+            builder.Entity<Report>()
                 .HasIndex(r => r.ReportedAt);
 
             builder.Entity<Report>()
