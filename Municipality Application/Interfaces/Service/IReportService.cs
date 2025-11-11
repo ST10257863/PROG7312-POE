@@ -2,9 +2,6 @@
 
 namespace Municipality_Application.Interfaces.Service
 {
-    /// <summary>
-    /// Provides higher-level report operations such as submission, retrieval, modification, and removal.
-    /// </summary>
     public interface IReportService
     {
         /// <summary>
@@ -41,6 +38,17 @@ namespace Municipality_Application.Interfaces.Service
         /// <param name="id">The report's unique identifier.</param>
         /// <returns>True if the removal was successful; otherwise, false.</returns>
         Task<bool> RemoveReportAsync(Guid id);
+
+        /// <summary>
+        /// Fetches a list of reports filtered by the specified criteria.
+        /// </summary>
+        /// <param name="searchTitle">Optional: Filter by report title (partial match).</param>
+        /// <param name="searchArea">Optional: Filter by area, suburb, or city (partial match).</param>
+        /// <param name="startDate">Optional: Filter for reports submitted on or after this date.</param>
+        /// <param name="endDate">Optional: Filter for reports submitted on or before this date.</param>
+        /// <param name="categoryId">Optional: Filter by category ID.</param>
+        /// <param name="status">Optional: Filter by report status.</param>
+        /// <returns>An enumerable collection of filtered <see cref="Report"/> objects.</returns>
         Task<IEnumerable<Report>> ListReportsFilteredAsync(string? searchTitle, string? searchArea, DateTime? startDate, DateTime? endDate, int? categoryId, string? status);
     }
 }

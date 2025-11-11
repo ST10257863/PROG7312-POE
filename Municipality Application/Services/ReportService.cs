@@ -2,9 +2,16 @@
 using Municipality_Application.Interfaces;
 using Municipality_Application.Interfaces.Service;
 using Municipality_Application.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Municipality_Application.Services
 {
+    /// <summary>
+    /// Provides methods for managing and retrieving report data.
+    /// </summary>
     public class ReportService : IReportService
     {
         private readonly IReportRepository _reportRepository;
@@ -14,6 +21,10 @@ namespace Municipality_Application.Services
         private readonly HashSet<int> _categorySet = new();
         private readonly Dictionary<Guid, Report> _reportDictionary = new();
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReportService"/> class.
+        /// </summary>
+        /// <param name="reportRepository">The report repository to use for data access.</param>
         public ReportService(IReportRepository reportRepository)
         {
             _reportRepository = reportRepository;
@@ -39,7 +50,7 @@ namespace Municipality_Application.Services
 
         private async Task<List<Attachment>> ProcessAttachmentsAsync(Guid reportId, List<IFormFile> files)
         {
-            const long MaxFileSize = 5 * 1024 * 1024; // 5MB
+            const long MaxFileSize = 5 * 1024 * 1024;
             var attachments = new List<Attachment>();
 
             if (files != null && files.Count > 0)
@@ -75,6 +86,7 @@ namespace Municipality_Application.Services
             return attachments;
         }
 
+        /// <inheritdoc/>
         public async Task<Report> SubmitReportAsync(Report report, List<IFormFile> files)
         {
             if (report.Id == Guid.Empty)
@@ -83,10 +95,10 @@ namespace Municipality_Application.Services
             }
 
             report.Attachments = await ProcessAttachmentsAsync(report.Id, files);
-            // Latitude and Longitude are already set by the controller
             return await _reportRepository.AddReportAsync(report);
         }
 
+        /// <inheritdoc/>
         public async Task<Report?> GetReportDetailsAsync(Guid id)
         {
             await OrganizeReportsAsync();
@@ -94,23 +106,26 @@ namespace Municipality_Application.Services
             return report;
         }
 
+        /// <inheritdoc/>
         public async Task<IEnumerable<Report>> ListReportsAsync()
         {
             await OrganizeReportsAsync();
             return _reportQueue.ToList();
         }
 
+        /// <inheritdoc/>
         public async Task<bool> ModifyReportAsync(Report report)
         {
             return await _reportRepository.UpdateReportAsync(report);
         }
 
+        /// <inheritdoc/>
         public async Task<bool> RemoveReportAsync(Guid id)
         {
             return await _reportRepository.DeleteReportAsync(id);
         }
 
-        // Updated: Add categoryId and status as filter parameters
+        /// <inheritdoc/>
         public async Task<IEnumerable<Report>> ListReportsFilteredAsync(
             string? searchTitle,
             string? searchArea,
@@ -123,7 +138,10 @@ namespace Municipality_Application.Services
                 searchTitle, searchArea, startDate, endDate, categoryId, status);
         }
 
-        // Static: Get status select list from enum
+        /// <summary>
+        /// Gets a list of status options for use in dropdowns, based on the <see cref="IssueStatus"/> enum.
+        /// </summary>
+        /// <returns>An enumerable collection of <see cref="SelectListItem"/> representing status options.</returns>
         public IEnumerable<SelectListItem> GetIssueStatusSelectList()
         {
             return Enum.GetValues(typeof(IssueStatus))

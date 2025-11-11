@@ -201,7 +201,7 @@ namespace Municipality_Application.Data.EF
             if (!string.IsNullOrWhiteSpace(status) && Enum.TryParse<IssueStatus>(status, out var parsedStatus))
                 query = query.Where(r => r.Status == parsedStatus);
 
-            return await query.ToListAsync();
+            return await query.OrderByDescending(r => r.ReportedAt).ToListAsync();
         }
     }
 }
