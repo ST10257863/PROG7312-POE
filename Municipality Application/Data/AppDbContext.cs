@@ -41,6 +41,27 @@ namespace Municipality_Application.Data
                 .WithMany()
                 .HasForeignKey(r => r.AddressId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Report>()
+                .HasIndex(r => r.ReportedAt);
+
+            builder.Entity<Report>()
+                .HasIndex(r => r.CategoryId);
+
+            builder.Entity<Report>()
+                .HasIndex(r => r.Status);
+
+            builder.Entity<Address>()
+                .HasIndex(a => a.City);
+
+            builder.Entity<Address>()
+                .HasIndex(a => a.Province);
+
+            builder.Entity<Address>()
+                .HasIndex(a => a.Street);
+
+            builder.Entity<Address>()
+                .HasIndex(a => a.FormattedAddress);
         }
     }
 }

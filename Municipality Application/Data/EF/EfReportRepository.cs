@@ -170,6 +170,7 @@ namespace Municipality_Application.Data.EF
             string? status)
         {
             var query = _dbContext.Reports
+                .AsNoTracking() // Add this for read-only queries
                 .Include(r => r.Attachments)
                 .Include(r => r.Category)
                 .Include(r => r.User)
