@@ -15,12 +15,36 @@
     <h2 class="table-title">Service Request Status</h2>
     <form method="get" class="mb-4">
         <div class="row g-3">
-            <!-- First row: Description and Location -->
-            <div class="col-md-4">
+            <!-- First row: Description, Location, Category, Status -->
+            <div class="col-md-3">
                 <input type="text" name="SearchTitle" value="@Model.SearchTitle" class="form-control" placeholder="Search by description" />
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <input type="text" id="SearchArea" name="SearchArea" value="@Model.SearchArea" class="form-control" placeholder="Search by area" />
+            </div>
+            <div class="col-md-3">
+                <select name="CategoryId" class="form-select">
+                    <option value="">All Categories</option>
+                    @if (Model.Categories != null)
+                    {
+                        foreach (var category in Model.Categories)
+                        {
+                            <option value="@category.Id" selected="@(Model.CategoryId == category.Id ? "selected" : null)">@category.Name</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="col-md-3">
+                <select name="Status" class="form-select">
+                    <option value="">All Statuses</option>
+                    @if (Model.Statuses != null)
+                    {
+                        foreach (var status in Model.Statuses)
+                        {
+                            <option value="@status.Value" selected="@(Model.Status == status.Value ? "selected" : null)">@status.Text</option>
+                        }
+                    }
+                </select>
             </div>
         </div>
         <div class="row g-3 mt-2 align-items-end">
@@ -38,15 +62,11 @@
                 <select id="DateRangePreset" class="form-select" onchange="setDateRangePreset()">
                     <option value="">-- Date Range Preset --</option>
                     <option value="thisMonth">This Month</option>
-                    <option value="lastMonth">Last Month</option>
                     <option value="last30">Last 30 Days</option>
                     <option value="thisYear">This Year</option>
                     <option value="last365">Last 365 Days</option>
                 </select>
             </div>
-
-        </div>
-        <div class="row g-3 mt-2 align-items-end">
             <div class="col-md-3 d-flex align-items-end">
                 <button type="submit" class="btn btn-primary w-100">Search</button>
             </div>

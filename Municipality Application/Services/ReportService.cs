@@ -1,4 +1,5 @@
-﻿using Municipality_Application.Interfaces;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using Municipality_Application.Interfaces;
 using Municipality_Application.Interfaces.Service;
 using Municipality_Application.Models;
 
@@ -109,9 +110,29 @@ namespace Municipality_Application.Services
             return await _reportRepository.DeleteReportAsync(id);
         }
 
-        public async Task<IEnumerable<Report>> ListReportsFilteredAsync(string? searchTitle, string? searchArea, DateTime? startDate, DateTime? endDate)
+        // Updated: Add categoryId and status as filter parameters
+        public async Task<IEnumerable<Report>> ListReportsFilteredAsync(
+            string? searchTitle,
+            string? searchArea,
+            DateTime? startDate,
+            DateTime? endDate,
+            int? categoryId,
+            string? status)
         {
-            return await _reportRepository.GetFilteredReportsAsync(searchTitle, searchArea, startDate, endDate);
+            return await _reportRepository.GetFilteredReportsAsync(
+                searchTitle, searchArea, startDate, endDate, categoryId, status);
+        }
+
+        // Static: Get status select list from enum
+        public IEnumerable<SelectListItem> GetIssueStatusSelectList()
+        {
+            return Enum.GetValues(typeof(IssueStatus))
+                .Cast<IssueStatus>()
+                .Select(e => new SelectListItem
+                {
+                    Value = e.ToString(),
+                    Text = e == IssueStatus.InProgress ? "In Progress" : e.ToString()
+                });
         }
     }
 }

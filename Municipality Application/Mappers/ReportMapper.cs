@@ -1,4 +1,5 @@
-﻿using Municipality_Application.Models;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using Municipality_Application.Models;
 using Municipality_Application.ViewModels;
 
 namespace Municipality_Application.Mappers
@@ -85,6 +86,17 @@ namespace Municipality_Application.Mappers
                     })
                     .ToList() ?? new List<AttachmentViewModel>()
             };
+        }
+
+        public static IEnumerable<SelectListItem> GetStatusSelectList()
+        {
+            return Enum.GetValues(typeof(IssueStatus))
+                .Cast<IssueStatus>()
+                .Select(e => new SelectListItem
+                {
+                    Value = e.ToString(),
+                    Text = e == IssueStatus.InProgress ? "In Progress" : e.ToString()
+                });
         }
     }
 }

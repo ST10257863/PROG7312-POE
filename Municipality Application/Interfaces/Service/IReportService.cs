@@ -41,6 +41,6 @@ namespace Municipality_Application.Interfaces.Service
         /// <param name="id">The report's unique identifier.</param>
         /// <returns>True if the removal was successful; otherwise, false.</returns>
         Task<bool> RemoveReportAsync(Guid id);
-        Task<IEnumerable<Report>> ListReportsFilteredAsync(string? searchTitle, string? searchArea, DateTime? startDate, DateTime? endDate);
+        Task<IEnumerable<Report>> ListReportsFilteredAsync(string? searchTitle, string? searchArea, DateTime? startDate, DateTime? endDate, int? categoryId, string? status);
     }
 }

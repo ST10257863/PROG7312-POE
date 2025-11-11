@@ -161,7 +161,13 @@ namespace Municipality_Application.Data.EF
         /// <summary>
         /// Retrieves filtered reports from the database, including their addresses.
         /// </summary>
-        public async Task<IEnumerable<Report>> GetFilteredReportsAsync(string? searchTitle, string? searchArea, DateTime? startDate, DateTime? endDate)
+        public async Task<IEnumerable<Report>> GetFilteredReportsAsync(
+            string? searchTitle,
+            string? searchArea,
+            DateTime? startDate,
+            DateTime? endDate,
+            int? categoryId,
+            string? status)
         {
             var query = _dbContext.Reports
                 .Include(r => r.Attachments)
@@ -188,6 +194,12 @@ namespace Municipality_Application.Data.EF
                 query = query.Where(r => r.ReportedAt >= startDate.Value);
             if (endDate.HasValue)
                 query = query.Where(r => r.ReportedAt <= endDate.Value);
+
+            if (categoryId.HasValue)
+                query = query.Where(r => r.CategoryId == categoryId.Value);
+
+            if (!string.IsNullOrWhiteSpace(status) && Enum.TryParse<IssueStatus>(status, out var parsedStatus))
+                query = query.Where(r => r.Status == parsedStatus);
 
             return await query.ToListAsync();
         }
