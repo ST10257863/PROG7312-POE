@@ -55,17 +55,21 @@ namespace Municipality_Application.Services
         /// <inheritdoc/>
         public async Task<IEnumerable<Report>> ListReportsAsync(bool forceRefresh = false)
         {
+            // Try to get reports from cache unless forceRefresh is requested
             if (!forceRefresh && _memoryCache.TryGetValue(CacheKey, out List<Report> cachedReports))
             {
+                // Always rebuild in-memory structures from cache
                 BuildInMemoryStructures(cachedReports);
                 return cachedReports;
             }
 
+            // Fetch all reports from the repository, order by date, and take the most recent
             var allReports = (await _reportRepository.GetAllReportsAsync())
                 .OrderByDescending(r => r.ReportedAt)
                 .Take(MaxReports)
                 .ToList();
 
+            // Build in-memory structures for fast access and cache the result
             BuildInMemoryStructures(allReports);
             _memoryCache.Set(CacheKey, allReports, CacheDuration);
             return allReports;
@@ -74,30 +78,36 @@ namespace Municipality_Application.Services
         /// <inheritdoc/>
         public async Task<Report> SubmitReportAsync(Report report, List<IFormFile> files)
         {
+            // Ensure the report has a unique ID
             if (report.Id == Guid.Empty)
             {
                 report.Id = Guid.NewGuid();
             }
 
+            // Process and attach any uploaded files
             report.Attachments = await ProcessAttachmentsAsync(report.Id, files);
+            // Save the report to the repository
             return await _reportRepository.AddReportAsync(report);
         }
 
         /// <inheritdoc/>
         public async Task<Report?> GetReportDetailsAsync(Guid id)
         {
+            // Retrieve a single report by its ID
             return await _reportRepository.GetReportByIdAsync(id);
         }
 
         /// <inheritdoc/>
         public async Task<bool> ModifyReportAsync(Report report)
         {
+            // Update an existing report
             return await _reportRepository.UpdateReportAsync(report);
         }
 
         /// <inheritdoc/>
         public async Task<bool> RemoveReportAsync(Guid id)
         {
+            // Delete a report by its ID
             return await _reportRepository.DeleteReportAsync(id);
         }
 
@@ -111,8 +121,10 @@ namespace Municipality_Application.Services
             int? categoryId,
             string? status)
         {
+            // Start with all reports (from cache or DB)
             var reports = (await ListReportsAsync()).AsQueryable();
 
+            // Filter by report ID (exact or partial match)
             if (!string.IsNullOrWhiteSpace(searchReportId))
             {
                 if (Guid.TryParse(searchReportId, out var reportGuid))
@@ -125,9 +137,11 @@ namespace Municipality_Application.Services
                 }
             }
 
+            // Filter by title/description
             if (!string.IsNullOrWhiteSpace(searchTitle))
                 reports = reports.Where(r => r.Description.Contains(searchTitle, StringComparison.OrdinalIgnoreCase));
 
+            // Filter by area (street, suburb, city, etc.)
             if (!string.IsNullOrWhiteSpace(searchArea))
             {
                 var areaParts = searchArea.Split(',')
@@ -148,17 +162,21 @@ namespace Municipality_Application.Services
                 );
             }
 
+            // Filter by date range
             if (startDate.HasValue)
                 reports = reports.Where(r => r.ReportedAt >= startDate.Value);
             if (endDate.HasValue)
                 reports = reports.Where(r => r.ReportedAt <= endDate.Value);
 
+            // Filter by category
             if (categoryId.HasValue)
                 reports = reports.Where(r => r.CategoryId == categoryId.Value);
 
+            // Filter by status
             if (!string.IsNullOrWhiteSpace(status) && Enum.TryParse<IssueStatus>(status, out var parsedStatus))
                 reports = reports.Where(r => r.Status == parsedStatus);
 
+            // If BST is available, use it for efficient date sorting
             if (_reportBst != null)
             {
                 var filtered = _reportBst.InOrderTraversal()
@@ -167,12 +185,14 @@ namespace Municipality_Application.Services
                 return filtered;
             }
 
+            // Otherwise, just order by date
             return reports.OrderByDescending(r => r.ReportedAt).ToList();
         }
 
         /// <inheritdoc/>
         public IEnumerable<SelectListItem> GetIssueStatusSelectList()
         {
+            // Build a dropdown list from the IssueStatus enum
             return Enum.GetValues(typeof(IssueStatus))
                 .Cast<IssueStatus>()
                 .Select(e => new SelectListItem
@@ -185,6 +205,7 @@ namespace Municipality_Application.Services
         /// <inheritdoc/>
         public async Task<IEnumerable<Report>> ListReportsSortedByDateAsync()
         {
+            // Get all reports and build a BST for date sorting
             var reports = await _reportRepository.GetAllReportsAsync();
             var bst = BuildReportTree(reports);
             return bst.InOrderTraversal().Select(w => w.Report);
@@ -193,6 +214,7 @@ namespace Municipality_Application.Services
         /// <inheritdoc/>
         public async Task<IEnumerable<Report>> SearchReportsByDateRangeAsync(DateTime start, DateTime end)
         {
+            // Get all reports and use BST to efficiently find those in the date range
             var reports = await _reportRepository.GetAllReportsAsync();
             var bst = BuildReportTree(reports);
             return bst.InOrderTraversal()
@@ -203,9 +225,11 @@ namespace Municipality_Application.Services
         /// <inheritdoc/>
         public async Task<IEnumerable<Report>> GetTopUrgentReportsAsync(int count = 5)
         {
+            // Get all reports and build a MinHeap for urgent (unresolved) reports
             var reports = await _reportRepository.GetAllReportsAsync();
             var heap = BuildPriorityQueue(reports);
             var result = new List<Report>();
+            // Extract the top N urgent reports
             for (int i = 0; i < count && heap.Count > 0; i++)
             {
                 result.Add(heap.ExtractMin().Report);
@@ -221,6 +245,7 @@ namespace Municipality_Application.Services
         /// <returns>List of the most recent reports.</returns>
         public async Task<IEnumerable<Report>> GetTopRecentReportsAsync(int count = 10)
         {
+            // Get all reports and build a MaxHeap for most recent reports
             var reports = await _reportRepository.GetAllReportsAsync();
             var heap = new MaxHeap<Report>(Comparer<Report>.Create(
                 (a, b) => b.ReportedAt.CompareTo(a.ReportedAt)
@@ -229,6 +254,7 @@ namespace Municipality_Application.Services
                 heap.Insert(report);
 
             var result = new List<Report>();
+            // Extract the top N most recent reports
             for (int i = 0; i < count && heap.Count > 0; i++)
             {
                 result.Add(heap.ExtractMax());
@@ -239,14 +265,17 @@ namespace Municipality_Application.Services
         /// <inheritdoc/>
         public async Task<IEnumerable<Report>> GetRelatedRequestsByGraphAsync(Guid rootId)
         {
+            // Get all reports and build a graph where nodes are reports and edges connect related reports
             var allReports = (await ListReportsAsync()).ToList();
             var reportDict = allReports.ToDictionary(r => r.Id, r => r);
 
             var graph = new Graph<Guid>();
 
+            // Add all reports as vertices
             foreach (var report in allReports)
                 graph.AddVertex(report.Id);
 
+            // Connect reports with the same category
             var categoryGroups = allReports.GroupBy(r => r.CategoryId);
             foreach (var group in categoryGroups)
             {
@@ -256,6 +285,7 @@ namespace Municipality_Application.Services
                         graph.AddEdge(ids[i], ids[j]);
             }
 
+            // Connect reports with the same suburb
             var suburbGroups = allReports
                 .Where(r => r.Address?.Suburb != null && !string.IsNullOrWhiteSpace(r.Address.Suburb))
                 .GroupBy(r => r.Address!.Suburb!.Trim().ToLowerInvariant());
@@ -267,9 +297,11 @@ namespace Municipality_Application.Services
                         graph.AddEdge(ids[i], ids[j]);
             }
 
+            // Use BFS to find all related reports from the root
             var relatedIds = graph.Bfs(rootId).ToList();
             var relatedReports = relatedIds.Select(id => reportDict[id]);
 
+            // If there are enough geo-located reports, build a geo-graph for MST (visualization)
             var geoReports = relatedReports
                 .Where(r => r.Address?.Latitude != null && r.Address?.Longitude != null)
                 .ToList();
@@ -280,6 +312,7 @@ namespace Municipality_Application.Services
                 foreach (var report in geoReports)
                     geoGraph.AddVertex(report.Id);
 
+                // Add weighted edges based on Haversine distance
                 for (int i = 0; i < geoReports.Count; i++)
                 {
                     for (int j = i + 1; j < geoReports.Count; j++)
@@ -293,6 +326,7 @@ namespace Municipality_Application.Services
                     }
                 }
 
+                // Optionally, get the minimum spanning tree (not used in return value)
                 var mstEdges = geoGraph.GetMinimumSpanningTree();
             }
 
@@ -309,16 +343,19 @@ namespace Municipality_Application.Services
         /// <param name="reports">The list of reports to build structures from.</param>
         private void BuildInMemoryStructures(List<Report> reports)
         {
+            // Build a BST for date-based queries
             _reportBst = new BinarySearchTree<ReportByDateWrapper>();
             foreach (var report in reports)
                 _reportBst.Insert(new ReportByDateWrapper(report));
 
+            // Build a MaxHeap for recent reports
             _recentHeap = new MaxHeap<Report>(Comparer<Report>.Create(
                 (a, b) => b.ReportedAt.CompareTo(a.ReportedAt)
             ));
             foreach (var report in reports)
                 _recentHeap.Insert(report);
 
+            // Build a MinHeap for urgent (unresolved) reports
             _priorityHeap = new MinHeap<ReportPriorityWrapper>();
             foreach (var report in reports)
             {
@@ -338,17 +375,20 @@ namespace Municipality_Application.Services
             const long MaxFileSize = 5 * 1024 * 1024;
             var attachments = new List<Attachment>();
 
+            // Loop through each file and process if valid
             if (files != null && files.Count > 0)
             {
                 foreach (var file in files)
                 {
                     if (file.Length > 0)
                     {
+                        // Enforce file size limit
                         if (file.Length > MaxFileSize)
                         {
                             throw new Exception($"File '{file.FileName}' exceeds the 5MB size limit.");
                         }
 
+                        // Read file into memory and convert to base64 data URL
                         using var ms = new MemoryStream();
                         await file.CopyToAsync(ms);
                         var fileBytes = ms.ToArray();
@@ -378,6 +418,7 @@ namespace Municipality_Application.Services
         /// <returns>A BST containing all reports, sorted by ReportedAt.Ticks.</returns>
         private BinarySearchTree<ReportByDateWrapper> BuildReportTree(IEnumerable<Report> reports)
         {
+            // Insert each report into the BST using a date wrapper
             var bst = new BinarySearchTree<ReportByDateWrapper>();
             foreach (var report in reports)
                 bst.Insert(new ReportByDateWrapper(report));
@@ -392,6 +433,7 @@ namespace Municipality_Application.Services
         /// <returns>A MinHeap containing prioritized reports.</returns>
         private MinHeap<ReportPriorityWrapper> BuildPriorityQueue(IEnumerable<Report> reports)
         {
+            // Insert unresolved reports into the MinHeap
             var heap = new MinHeap<ReportPriorityWrapper>();
             foreach (var report in reports)
             {
@@ -413,6 +455,7 @@ namespace Municipality_Application.Services
         /// <returns>The distance in kilometers.</returns>
         private static double HaversineDistance(double lat1, double lon1, double lat2, double lon2)
         {
+            // Standard Haversine formula for distance on a sphere
             const double R = 6371;
             double dLat = DegreesToRadians(lat2 - lat1);
             double dLon = DegreesToRadians(lon2 - lon1);
@@ -485,6 +528,7 @@ namespace Municipality_Application.Services
 
             private void HeapifyUp(int index)
             {
+                // Move the new element up to maintain heap property
                 while (index > 0)
                 {
                     int parent = (index - 1) / 2;
@@ -497,6 +541,7 @@ namespace Municipality_Application.Services
 
             private void HeapifyDown(int index)
             {
+                // Move the root element down to maintain heap property
                 int lastIndex = _elements.Count - 1;
                 while (true)
                 {

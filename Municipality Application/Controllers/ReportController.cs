@@ -42,15 +42,18 @@ namespace Municipality_Application.Controllers
         /// <returns>The report creation view with categories and urgent reports.</returns>
         public async Task<IActionResult> Index()
         {
+            // Get all categories for the dropdown
             var categories = await _categoryRepository.GetAllCategoriesAsync();
             var model = new ReportCreateViewModel
             {
                 Categories = categories
             };
 
+            // Get the most urgent reports for display
             var urgentReports = await _reportService.GetTopUrgentReportsAsync(5);
             model.TopUrgentReports = urgentReports.Select(ReportMapper.ToViewModel).ToList();
 
+            // Show the main report creation page
             return View(model);
         }
 
@@ -64,21 +67,26 @@ namespace Municipality_Application.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(ReportCreateViewModel model)
         {
+            // If the form is invalid, reload categories and redisplay the form
             if (!ModelState.IsValid)
             {
                 model.Categories = await _categoryRepository.GetAllCategoriesAsync();
                 return View("Index", model);
             }
 
+            // Convert the view model to a domain model
             var report = ReportMapper.ToDomainModel(model);
 
             try
             {
+                // Try to save the report and attached files
                 var savedReport = await _reportService.SubmitReportAsync(report, model.Files ?? new List<IFormFile>());
+                // Redirect to confirmation if successful
                 return RedirectToAction("Confirmation", new { id = savedReport.Id });
             }
             catch (Exception)
             {
+                // If something goes wrong, show an error and reload categories
                 ModelState.AddModelError("", "An error occurred while saving the report. Please try again.");
                 model.Categories = await _categoryRepository.GetAllCategoriesAsync();
                 return View("Index", model);
@@ -92,11 +100,14 @@ namespace Municipality_Application.Controllers
         /// <returns>The confirmation view if the report exists; otherwise, a 404 Not Found result.</returns>
         public async Task<IActionResult> Confirmation(Guid id)
         {
+            // Look up the report by ID
             var report = await _reportService.GetReportDetailsAsync(id);
             if (report == null)
             {
+                // If not found, show 404
                 return NotFound();
             }
+            // Map to a confirmation view model and show the confirmation page
             var viewModel = ReportMapper.ToConfirmationViewModel(report);
             return View("Confirmation", viewModel);
         }
@@ -112,9 +123,11 @@ namespace Municipality_Application.Controllers
         /// <returns>The status page view with filtered results.</returns>
         public async Task<IActionResult> ServiceRequestStatus(ServiceRequestStatusPageViewModel model)
         {
+            // Load dropdowns for status and categories
             model.Statuses = ReportMapper.GetStatusSelectList();
             model.Categories = await _categoryRepository.GetAllCategoriesAsync();
 
+            // Get filtered reports based on search criteria
             var reports = await _reportService.ListReportsFilteredAsync(
                 model.SearchReportId,
                 model.SearchTitle,
@@ -124,6 +137,7 @@ namespace Municipality_Application.Controllers
                 model.CategoryId,
                 model.Status);
 
+            // Map results to view models for display
             model.Results = reports.Select(ReportMapper.ToViewModel).ToList();
             return View(model);
         }
@@ -135,11 +149,14 @@ namespace Municipality_Application.Controllers
         /// <returns>The detailed status view if the report exists; otherwise, a 404 Not Found result.</returns>
         public async Task<IActionResult> ServiceRequestStatusInformation(Guid id)
         {
+            // Get the report details
             var report = await _reportService.GetReportDetailsAsync(id);
             if (report == null)
             {
+                // Show 404 if not found
                 return NotFound();
             }
+            // Map to a detailed status view model and show the page
             var viewModel = ReportMapper.ToServiceRequestStatusViewModel(report);
             return View("ServiceRequestStatusInformation", viewModel);
         }
@@ -156,7 +173,9 @@ namespace Municipality_Application.Controllers
         [Route("Reports/TreeView")]
         public async Task<IActionResult> TreeView()
         {
+            // Get all reports sorted by date using BST
             var sortedReports = await _reportService.ListReportsSortedByDateAsync();
+            // Map to view models for display
             var viewModels = sortedReports.Select(ReportMapper.ToServiceRequestStatusViewModel).ToList();
             return View("TreeView", viewModels);
         }
@@ -170,7 +189,9 @@ namespace Municipality_Application.Controllers
         [Route("Reports/PriorityQueue")]
         public async Task<IActionResult> PriorityQueue(int count = 5)
         {
+            // Get the most urgent reports using a MinHeap
             var urgentReports = await _reportService.GetTopUrgentReportsAsync(count);
+            // Map to view models for display
             var viewModels = urgentReports.Select(ReportMapper.ToServiceRequestStatusViewModel).ToList();
             return View("PriorityQueue", viewModels);
         }
@@ -184,7 +205,9 @@ namespace Municipality_Application.Controllers
         [Route("Reports/GraphView/{id}")]
         public async Task<IActionResult> GraphView(Guid id)
         {
+            // Find related reports using graph traversal (BFS)
             var relatedReports = await _reportService.GetRelatedRequestsByGraphAsync(id);
+            // Map to view models for display
             var viewModels = relatedReports.Select(ReportMapper.ToServiceRequestStatusViewModel).ToList();
             return View("GraphView", viewModels);
         }
