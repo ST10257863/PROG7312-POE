@@ -4,10 +4,12 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 namespace Municipality_Application.Interfaces.Service
 {
     /// <summary>
-    /// Provides methods for managing and retrieving report data, including advanced data structure integrations.
+    /// Provides methods for managing and retrieving report data, including advanced data structure integrations for efficient access and filtering.
     /// </summary>
     public interface IReportService
     {
+        #region Report Submission and Modification
+
         /// <summary>
         /// Submits a new report with optional file attachments.
         /// </summary>
@@ -15,20 +17,6 @@ namespace Municipality_Application.Interfaces.Service
         /// <param name="files">A list of files to attach to the report.</param>
         /// <returns>The submitted <see cref="Report"/> object.</returns>
         Task<Report> SubmitReportAsync(Report report, List<IFormFile> files);
-
-        /// <summary>
-        /// Retrieves detailed information for a specific report.
-        /// </summary>
-        /// <param name="id">The report's unique identifier.</param>
-        /// <returns>The <see cref="Report"/> object if found; otherwise, null.</returns>
-        Task<Report?> GetReportDetailsAsync(Guid id);
-
-        /// <summary>
-        /// Lists all reports.
-        /// </summary>
-        /// <param name="forceRefresh">If true, forces a refresh from the data source; otherwise, may use cached data.</param>
-        /// <returns>An enumerable collection of <see cref="Report"/> objects.</returns>
-        Task<IEnumerable<Report>> ListReportsAsync(bool forceRefresh = false);
 
         /// <summary>
         /// Modifies an existing report.
@@ -43,6 +31,24 @@ namespace Municipality_Application.Interfaces.Service
         /// <param name="id">The report's unique identifier.</param>
         /// <returns>True if the removal was successful; otherwise, false.</returns>
         Task<bool> RemoveReportAsync(Guid id);
+
+        #endregion
+
+        #region Report Retrieval
+
+        /// <summary>
+        /// Retrieves detailed information for a specific report.
+        /// </summary>
+        /// <param name="id">The report's unique identifier.</param>
+        /// <returns>The <see cref="Report"/> object if found; otherwise, null.</returns>
+        Task<Report?> GetReportDetailsAsync(Guid id);
+
+        /// <summary>
+        /// Lists all reports, optionally forcing a refresh from the data source.
+        /// </summary>
+        /// <param name="forceRefresh">If true, forces a refresh from the data source; otherwise, may use cached data.</param>
+        /// <returns>An enumerable collection of <see cref="Report"/> objects.</returns>
+        Task<IEnumerable<Report>> ListReportsAsync(bool forceRefresh = false);
 
         /// <summary>
         /// Fetches a list of reports filtered by the specified criteria.
@@ -70,14 +76,18 @@ namespace Municipality_Application.Interfaces.Service
         /// <returns>An enumerable collection of <see cref="SelectListItem"/> representing status options.</returns>
         IEnumerable<SelectListItem> GetIssueStatusSelectList();
 
+        #endregion
+
+        #region Advanced Data Structure Operations
+
         /// <summary>
-        /// [BST] Returns all reports sorted by ReportedAt using a Binary Search Tree (BST) for efficient O(log n) search and retrieval.
+        /// Returns all reports sorted by ReportedAt using a Binary Search Tree (BST) for efficient O(log n) search and retrieval.
         /// </summary>
         /// <returns>Sorted list of reports.</returns>
         Task<IEnumerable<Report>> ListReportsSortedByDateAsync();
 
         /// <summary>
-        /// [BST] Searches reports in memory for those within the specified date range using a BST for O(log n) efficiency.
+        /// Searches reports in memory for those within the specified date range using a BST for O(log n) efficiency.
         /// </summary>
         /// <param name="start">Start of the date range (inclusive).</param>
         /// <param name="end">End of the date range (inclusive).</param>
@@ -85,7 +95,7 @@ namespace Municipality_Application.Interfaces.Service
         Task<IEnumerable<Report>> SearchReportsByDateRangeAsync(DateTime start, DateTime end);
 
         /// <summary>
-        /// [MinHeap] Returns the top N most urgent unresolved reports using a MinHeap for prioritization.
+        /// Returns the top N most urgent unresolved reports using a MinHeap for prioritization.
         /// Demonstrates O(log n) extraction of the most urgent unresolved requests.
         /// </summary>
         /// <param name="count">Number of urgent reports to return.</param>
@@ -93,11 +103,13 @@ namespace Municipality_Application.Interfaces.Service
         Task<IEnumerable<Report>> GetTopUrgentReportsAsync(int count = 5);
 
         /// <summary>
-        /// [Graph] Demonstrates graph traversal by finding related service requests using BFS from the given root request.
-        /// Builds a graph where each node is a report, and edges connect reports with the same category.
+        /// Demonstrates graph traversal by finding related service requests using BFS from the given root request.
+        /// Builds a graph where each node is a report, and edges connect reports with the same category or suburb.
         /// </summary>
         /// <param name="rootId">The root report ID to start traversal from.</param>
         /// <returns>All related reports discovered via BFS traversal.</returns>
         Task<IEnumerable<Report>> GetRelatedRequestsByGraphAsync(Guid rootId);
+
+        #endregion
     }
 }
