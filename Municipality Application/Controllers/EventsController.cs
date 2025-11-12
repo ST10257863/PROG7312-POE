@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
-using Municipality_Application.Interfaces;
-using Microsoft.Extensions.Configuration;
-using System.Threading.Tasks;
+using Municipality_Application.Interfaces.Service;
+using Municipality_Application.Mappers;
+using Municipality_Application.ViewModels;
 
 namespace Municipality_Application.Controllers
 {
@@ -25,22 +25,40 @@ namespace Municipality_Application.Controllers
         /// Displays a list of events, optionally filtered by search, category, date, or location.
         /// Also provides event recommendations and available categories.
         /// </summary>
-        /// <param name="search">Optional search keyword.</param>
-        /// <param name="category">Optional event category.</param>
-        /// <param name="date">Optional event date.</param>
-        /// <param name="latitude">Optional latitude for location-based filtering.</param>
-        /// <param name="longitude">Optional longitude for location-based filtering.</param>
+        /// <param name="Search">Optional search keyword.</param>
+        /// <param name="Category">Optional event category.</param>
+        /// <param name="Date">Optional event date.</param>
+        /// <param name="Address">Optional address string (for display/filtering).</param>
+        /// <param name="Latitude">Optional latitude for location-based filtering.</param>
+        /// <param name="Longitude">Optional longitude for location-based filtering.</param>
         /// <returns>The events view with filtered events and recommendations.</returns>
-        public async Task<IActionResult> Index(string search, string category, DateTime? date, double? latitude, double? longitude)
+        public async Task<IActionResult> Index(
+            string? Search,
+            string? Category,
+            DateTime? Date,
+            string? Address,
+            double? Latitude,
+            double? Longitude)
         {
             var googleMapsKey = _config["ApiKeys:GoogleMaps"];
             ViewBag.GoogleMapsApiKey = string.IsNullOrWhiteSpace(googleMapsKey) ? null : googleMapsKey;
 
-            var events = await _eventService.GetEventsAsync(search, category, date, latitude, longitude);
-            var recommendations = await _eventService.GetRecommendationsAsync(search, category, date);
-            ViewBag.Categories = await _eventService.GetCategoriesAsync();
-            ViewBag.Recommendations = recommendations;
-            return View(events);
+            var events = await _eventService.GetEventsAsync(Search, Category, Date, Latitude, Longitude);
+            var recommendations = await _eventService.GetRecommendationsAsync(Search, Category, Date);
+            var categories = await _eventService.GetCategoriesAsync();
+
+            var viewModel = EventMapper.ToIndexViewModel(
+                events, 
+                recommendations, 
+                categories, 
+                Search, 
+                Category, 
+                Date, 
+                Address, 
+                Latitude, 
+                Longitude);
+
+            return View(viewModel);
         }
     }
 }

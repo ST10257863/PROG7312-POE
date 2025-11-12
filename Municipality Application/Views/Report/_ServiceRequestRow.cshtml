@@ -1,0 +1,18 @@
+﻿@model Municipality_Application.ViewModels.ServiceRequestStatusViewModel
+
+<tr>
+    <td>@ViewBag.RowNumber</td>
+    <td title="@Model.Description">
+        <a asp-controller="Report" asp-action="ServiceRequestStatusInformation" asp-route-id="@Model.Id" style="text-decoration:underline;cursor:pointer;">
+            @Model.Description
+        </a>
+    </td>
+    <td title="@Model.Address">@Model.Address</td>
+    <td>@Model.ReportedAt.ToString("yyyy-MM-dd")</td>
+    <td>
+        <span class="badge @(Model.Status == "Resolved" ? "bg-success" : Model.Status == "In Progress" ? "bg-warning text-dark" : "bg-secondary")">
+            @Model.Status
+        </span>
+    </td>
+    <td title="@Model.Category">@Model.Category</td>
+</tr>

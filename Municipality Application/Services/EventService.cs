@@ -1,12 +1,9 @@
 ﻿using Municipality_Application.Models;
 using Municipality_Application.Interfaces;
+using Municipality_Application.Interfaces.Service;
 
 namespace Municipality_Application.Services
 {
-    /// <summary>
-    /// Provides higher-level event operations such as filtering, recommendations, and category retrieval.
-    /// Organizes event data using various data structures for efficient access and demonstration purposes.
-    /// </summary>
     public class EventService : IEventService
     {
         private readonly IEventRepository _eventRepository;
@@ -19,18 +16,11 @@ namespace Municipality_Application.Services
         private Stack<Event> _eventStack = new();
         private Queue<Event> _eventQueue = new();
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="EventService"/> class.
-        /// </summary>
-        /// <param name="eventRepository">The event repository instance.</param>
         public EventService(IEventRepository eventRepository)
         {
             _eventRepository = eventRepository;
         }
 
-        /// <summary>
-        /// Loads and organizes events into internal data structures for efficient access.
-        /// </summary>
         private async Task OrganizeEventsAsync()
         {
             var events = await _eventRepository.GetAllEventsAsync();
@@ -65,15 +55,6 @@ namespace Municipality_Application.Services
             }
         }
 
-        /// <summary>
-        /// Retrieves events filtered by optional search keyword, category, date, or location.
-        /// </summary>
-        /// <param name="search">Optional search keyword.</param>
-        /// <param name="category">Optional event category.</param>
-        /// <param name="date">Optional event date.</param>
-        /// <param name="latitude">Optional latitude for location-based filtering.</param>
-        /// <param name="longitude">Optional longitude for location-based filtering.</param>
-        /// <returns>An enumerable collection of filtered <see cref="Event"/> objects.</returns>
         public async Task<IEnumerable<Event>> GetEventsAsync(string? search, string? category, DateTime? date, double? latitude, double? longitude)
         {
             await OrganizeEventsAsync();
@@ -86,7 +67,16 @@ namespace Municipality_Application.Services
                     (!string.IsNullOrEmpty(e.Title) && e.Title.ToLower().Contains(key)) ||
                     (!string.IsNullOrEmpty(e.Description) && e.Description.ToLower().Contains(key)) ||
                     (!string.IsNullOrEmpty(e.Category) && e.Category.ToLower().Contains(key)) ||
-                    (!string.IsNullOrEmpty(e.Address) && e.Address.ToLower().Contains(key))
+                    (e.Address != null &&
+                        (
+                            (!string.IsNullOrEmpty(e.Address.FormattedAddress) && e.Address.FormattedAddress.ToLower().Contains(key)) ||
+                            (!string.IsNullOrEmpty(e.Address.Street) && e.Address.Street.ToLower().Contains(key)) ||
+                            (!string.IsNullOrEmpty(e.Address.City) && e.Address.City.ToLower().Contains(key)) ||
+                            (!string.IsNullOrEmpty(e.Address.Province) && e.Address.Province.ToLower().Contains(key)) ||
+                            (!string.IsNullOrEmpty(e.Address.PostalCode) && e.Address.PostalCode.ToLower().Contains(key)) ||
+                            (!string.IsNullOrEmpty(e.Address.Country) && e.Address.Country.ToLower().Contains(key))
+                        )
+                    )
                 );
                 await _eventRepository.IncrementSearchFrequencyAsync(key);
             }
@@ -100,8 +90,8 @@ namespace Municipality_Application.Services
             if (latitude.HasValue && longitude.HasValue)
             {
                 result = result
-                    .Where(e => e.Latitude.HasValue && e.Longitude.HasValue)
-                    .OrderBy(e => GetDistance(latitude.Value, longitude.Value, e.Latitude.Value, e.Longitude.Value));
+                    .Where(e => e.Address != null && e.Address.Latitude.HasValue && e.Address.Longitude.HasValue)
+                    .OrderBy(e => GetDistance(latitude.Value, longitude.Value, e.Address!.Latitude!.Value, e.Address.Longitude!.Value));
             }
             else
             {
@@ -111,13 +101,6 @@ namespace Municipality_Application.Services
             return result;
         }
 
-        /// <summary>
-        /// Returns recommended events based on user search behavior or category similarity.
-        /// </summary>
-        /// <param name="search">Optional search keyword.</param>
-        /// <param name="category">Optional event category.</param>
-        /// <param name="date">Optional event date.</param>
-        /// <returns>An enumerable collection of recommended <see cref="Event"/> objects.</returns>
         public async Task<IEnumerable<Event>> GetRecommendationsAsync(string? search, string? category, DateTime? date)
         {
             await OrganizeEventsAsync();
@@ -133,43 +116,22 @@ namespace Municipality_Application.Services
             return _priorityQueue.UnorderedItems.Select(x => x.Element).OrderBy(e => e.Date).Take(3);
         }
 
-        /// <summary>
-        /// Gets the set of unique event categories.
-        /// </summary>
-        /// <returns>A set of unique category names.</returns>
         public async Task<HashSet<string>> GetCategoriesAsync()
         {
             await OrganizeEventsAsync();
             return _categories;
         }
 
-        /// <summary>
-        /// Increments the search frequency for a given search term.
-        /// </summary>
-        /// <param name="searchTerm">The search term to increment.</param>
-        /// <returns>A task representing the asynchronous operation.</returns>
         public async Task IncrementSearchFrequencyAsync(string searchTerm)
         {
             await _eventRepository.IncrementSearchFrequencyAsync(searchTerm);
         }
 
-        /// <summary>
-        /// Retrieves the search frequency dictionary for all search terms.
-        /// </summary>
-        /// <returns>A dictionary mapping search terms to their frequency.</returns>
         public async Task<Dictionary<string, int>> GetSearchFrequencyAsync()
         {
             return await _eventRepository.GetSearchFrequencyAsync();
         }
 
-        /// <summary>
-        /// Calculates the distance in kilometers between two geographic coordinates.
-        /// </summary>
-        /// <param name="lat1">Latitude of the first point.</param>
-        /// <param name="lon1">Longitude of the first point.</param>
-        /// <param name="lat2">Latitude of the second point.</param>
-        /// <param name="lon2">Longitude of the second point.</param>
-        /// <returns>The distance in kilometers.</returns>
         private static double GetDistance(double lat1, double lon1, double lat2, double lon2)
         {
             const double R = 6371; // Earth radius in km

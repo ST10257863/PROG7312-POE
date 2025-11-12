@@ -97,6 +97,24 @@ body {
     cursor: pointer;
 }
 
+.event-card {
+    height: 160px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+    .event-card .card-body {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+.event-meta {
+    margin-top: auto;
+}
+
+
 /* Footer */
 .footer {
     flex-shrink: 0;
@@ -142,3 +160,55 @@ body {
     #file-list .btn-outline-danger {
         padding: 0.1rem 0.3rem;
     }
+
+/* --- Service Request Status Table Styles --- */
+.custom-table {
+    border-radius: 0.5rem;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    background: #fff;
+    font-size: 1rem;
+    border-collapse: separate;
+    border-spacing: 0;
+    border: 2px solid var(--secondary-color)
+}
+
+    .custom-table thead {
+        background: var(--secondary-color);
+        color: #fff;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+    }
+
+    .custom-table th, .custom-table td {
+        vertical-align: middle;
+        text-align: center;
+        padding: 0.85rem 1rem;
+        border-bottom: 1px solid #e0e0e0;
+        height: 56px;
+        max-width: 220px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+        .custom-table th:first-child, .custom-table td:first-child {
+            border-left: none;
+        }
+
+        .custom-table th:last-child, .custom-table td:last-child {
+            border-right: none;
+        }
+
+    .custom-table tbody tr:hover {
+        background-color: #d0e7fa;
+        transition: background 0.2s;
+    }
+
+.table-title {
+    font-size: 2rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-bottom: 1.5rem;
+    letter-spacing: 1px;
+    text-align: left;
+}

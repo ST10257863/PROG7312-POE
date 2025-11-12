@@ -12,11 +12,5 @@ namespace Municipality_Application.Interfaces
         /// </summary>
         /// <returns>An enumerable collection of <see cref="Category"/> objects.</returns>
         Task<IEnumerable<Category>> GetAllCategoriesAsync();
-
-        /// <summary>
-        /// Seeds the data store with default categories if none exist.
-        /// </summary>
-        /// <returns>A task representing the asynchronous operation.</returns>
-        Task SeedDefaultCategoriesAsync();
     }
 }

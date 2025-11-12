@@ -1,37 +1,34 @@
 using System.Globalization;
 using Microsoft.EntityFrameworkCore;
 using Municipality_Application.Data;
+using Municipality_Application.Data.EF;
 using Municipality_Application.Interfaces;
-using Municipality_Application.Services; // Add this for EventService
+using Municipality_Application.Interfaces.Service;
+using Municipality_Application.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-// Add EF Core with LocalDB
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("ApplicationDbConnection")));
+// Toggle this flag to switch between in-memory and EF Core modes
+bool useInMemory = false; // Set to true for in-memory mode
 
-/*
-    Data Storage Configuration:
-    You can switch between in-memory and database-backed (EF Core) repositories by commenting or uncommenting the lines below.
-
-    - For in-memory storage (data is lost on application restart), uncomment the AddSingleton registrations and comment out the AddScoped EF Core registrations.
-    - For persistent database storage (data is saved in SQL via Entity Framework Core), ensure the AddScoped EF Core registrations are uncommented and the in-memory lines are commented.
-
-    This allows you to easily change the application's data storage mode for development or production needs.
-*/
-//For in-memory
-builder.Services.AddSingleton<IEventRepository, InMemoryEventRepository>();
-builder.Services.AddSingleton<IReportRepository, InMemoryReportRepository>();
-builder.Services.AddSingleton<ICategoryRepository, InMemoryCategoryRepository>();
-
-// For EF Core
-//builder.Services.AddScoped<IEventRepository, EfEventRepository>();
-//builder.Services.AddScoped<IReportRepository, EfReportRepository>();
-//builder.Services.AddScoped<ICategoryRepository, EfCategoryRepository>();
-
+if (useInMemory)
+{
+    //Removed in place of database persistence
+}
+else
+{
+    // EF Core with LocalDB (persistent)
+    builder.Services.AddDbContext<AppDbContext>(options =>
+        options.UseSqlServer(builder.Configuration.GetConnectionString("ApplicationDbConnection")));
+    builder.Services.AddScoped<IEventRepository, EfEventRepository>();
+    builder.Services.AddScoped<IReportRepository, EfReportRepository>();
+    builder.Services.AddScoped<ICategoryRepository, EfCategoryRepository>();
+    builder.Services.AddScoped<EFDataSeeder>();
+}
+builder.Services.AddHostedService<ReportPreloadBackgroundService>();
 builder.Services.AddScoped<IEventService, EventService>();
 builder.Services.AddScoped<IReportService, ReportService>();
 
@@ -57,11 +54,20 @@ app.MapControllerRoute(
 
 using (var scope = app.Services.CreateScope())
 {
-    var categoryRepo = scope.ServiceProvider.GetRequiredService<ICategoryRepository>();
-    await categoryRepo.SeedDefaultCategoriesAsync();
+    if (useInMemory)
+    {
+        // Removed in place of database persistence
+    }
+    else
+    {
+        // Ensure database is created and migrations are applied
+        var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        await dbContext.Database.MigrateAsync();
 
-    var eventRepo = scope.ServiceProvider.GetRequiredService<IEventRepository>();
-    await eventRepo.SeedDefaultEventsAsync();
+        // Seed the database
+        var seeder = scope.ServiceProvider.GetRequiredService<EFDataSeeder>();
+        await seeder.SeedAllAsync();
+    }
 }
 
 var cultureInfo = new CultureInfo("en-US");

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Municipality_Application.Data;
 
@@ -11,9 +12,11 @@ using Municipality_Application.Data;
 namespace Municipality_Application.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251109143824_UpdatingAddressWithSuburb")]
+    partial class UpdatingAddressWithSuburb
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -31,13 +34,13 @@ namespace Municipality_Application.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("City")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Country")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FormattedAddress")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<double?>("Latitude")
                         .HasColumnType("float");
@@ -49,24 +52,16 @@ namespace Municipality_Application.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Province")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Street")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Suburb")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("City");
-
-                    b.HasIndex("FormattedAddress");
-
-                    b.HasIndex("Province");
-
-                    b.HasIndex("Street");
 
                     b.ToTable("Addresses");
                 });
@@ -228,12 +223,6 @@ namespace Municipality_Application.Migrations
                     b.HasIndex("AddressId");
 
                     b.HasIndex("CategoryId");
-
-                    b.HasIndex("Id");
-
-                    b.HasIndex("ReportedAt");
-
-                    b.HasIndex("Status");
 
                     b.HasIndex("UserId");
 

@@ -1,5 +1,21 @@
-﻿@{
-    ViewData["Title"] = "Report Issue - MunicipalConnect";
+﻿@model Municipality_Application.ViewModels.ReportCreateViewModel
+
+@{
+    ViewData["Title"] = "Report Issue";
+}
+
+@section Scripts
+{
+    <script src="~/js/report-form.js"></script>
+    <script src="~/js/google-autocomplete.js"></script>
+    <script src="~/js/location-warning.js"></script>
+    <google-maps-script callback="initGoogleAutocompleteForReportAddress"></google-maps-script>
+    <script>
+        function initGoogleAutocompleteForReportAddress() {
+            window.initGoogleAutocomplete("Address");
+        }
+        window.showLocationWarningIfNeeded('location-warning');
+    </script>
 }
 
 <div class="container mt-4">
@@ -8,28 +24,29 @@
         <div class="col-md-8">
             <form asp-action="Create" method="post" enctype="multipart/form-data">
                 <div class="mb-3">
-                    <label for="Address" class="form-label"><i class="bi bi-geo-alt"></i> Location</label>
-                    <input type="text" class="form-control" id="Address" name="Address" placeholder="Enter street address, landmark, or area description" required>
+                    <input type="text" class="form-control" id="Address" name="Address" placeholder="Enter street address, landmark, or area description" required />
                 </div>
-
-                @if (string.IsNullOrEmpty(ViewBag.GoogleMapsApiKey as string))
-                {
-                    <div class="alert alert-warning">
-                        Location autocomplete is currently unavailable. Please enter your address manually.
-                    </div>
-                }
-
-                <!-- Hidden latitude and longitude fields for Google Maps API -->
-                <input type="hidden" id="Latitude" name="Latitude" />
-                <input type="hidden" id="Longitude" name="Longitude"/>
+                <div id="location-warning" class="alert alert-warning mt-2" style="display:none;">
+                    <strong>Location services are currently unavailable.</strong> We apologise for the inconvenience.
+                </div>
+                <!-- Hidden fields for Google Maps API -->
+                <input type="hidden" id="Address_Street" name="Address.Street" />
+                <input type="hidden" id="Address_Suburb" name="Address.Suburb" />
+                <input type="hidden" id="Address_City" name="Address.City" />
+                <input type="hidden" id="Address_Province" name="Address.Province" />
+                <input type="hidden" id="Address_PostalCode" name="Address.PostalCode" />
+                <input type="hidden" id="Address_Country" name="Address.Country" />
+                <input type="hidden" id="Address_Latitude" name="Address.Latitude" />
+                <input type="hidden" id="Address_Longitude" name="Address.Longitude" />
+                <input type="hidden" id="Address_FormattedAddress" name="Address.FormattedAddress" />
 
                 <div class="mb-3">
                     <label for="CategoryId" class="form-label"><i class="bi bi-list"></i> Issue Category</label>
                     <select class="form-select" id="CategoryId" name="CategoryId" required>
                         <option value="" selected disabled>Select a category</option>
-                        @if (ViewBag.Categories != null)
+                        @if (Model.Categories != null && Model.Categories.Any())
                         {
-                            foreach (var category in ViewBag.Categories)
+                            foreach (var category in Model.Categories)
                             {
                                 <option value="@category.Id">@category.Name</option>
                             }
@@ -104,188 +121,3 @@
         </div>
     </div>
 </div>
-
-@section Scripts {
-    <!-- Google Maps Places Autocomplete for Address Field
-         - Loads the Google Maps JavaScript API with the Places library using the API key from ViewBag.GoogleMapsApiKey.
-         - On DOMContentLoaded, initializes the autocomplete feature for the Address input field.
-         - Restricts autocomplete suggestions to geocoded locations within South Africa (country code 'za').
-         - If the API key is not set, autocomplete is not available and a warning is shown to the user.
-    -->
-    @if (!string.IsNullOrEmpty(ViewBag.GoogleMapsApiKey as string))
-    {
-        <script src="https://maps.googleapis.com/maps/api/js?key=@ViewBag.GoogleMapsApiKey&libraries=places"></script>
-        <script>
-            // Initialize Google Places Autocomplete for the Address input field
-            document.addEventListener('DOMContentLoaded', function () {
-                var input = document.getElementById('Address');
-                var latitudeInput = document.getElementById('Latitude');
-                var longitudeInput = document.getElementById('Longitude');
-                if (input && window.google && google.maps && google.maps.places) {
-                    var autocomplete = new google.maps.places.Autocomplete(input, {
-                        types: ['geocode'],
-                        componentRestrictions: { country: 'za' } // Restrict to South Africa
-                    });
-                    autocomplete.addListener('place_changed', function () {
-                        var place = autocomplete.getPlace();
-                        if (place.geometry) {
-                            latitudeInput.value = place.geometry.location.lat();
-                            longitudeInput.value = place.geometry.location.lng();
-                        }
-                    });
-                }
-            });
-        </script>
-    }
-    <script>
-        // Maximum file size allowed for uploads (5MB)
-        const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
-
-        // DOM elements for file upload and display
-        const dropzone = document.getElementById('dropzone');
-        const fileInput = document.getElementById('files');
-        const fileList = document.getElementById('file-list');
-
-        // Open file dialog when dropzone is clicked
-        dropzone.addEventListener('click', () => fileInput.click());
-
-        // Prevent default drag behaviors on dropzone
-        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-            dropzone.addEventListener(eventName, preventDefaults, false);
-        });
-
-        function preventDefaults(e) {
-            e.preventDefault();
-            e.stopPropagation();
-        }
-
-        // Handle files dropped onto the dropzone
-        dropzone.addEventListener('drop', handleDrop, false);
-
-        // Handle files selected via file input
-        fileInput.addEventListener('change', handleFileSelect, false);
-
-        // Process files dropped onto the dropzone
-        function handleDrop(e) {
-            let dt = e.dataTransfer;
-            let files = dt.files;
-            handleFiles(files);
-        }
-
-        // Process files selected via file input
-        function handleFileSelect(e) {
-            let files = e.target.files;
-            // Clear the display and input for new selection
-            fileList.innerHTML = '';
-            let dataTransfer = new DataTransfer();
-            Array.from(files).forEach(file => {
-                if (file.size > MAX_FILE_SIZE) {
-                    alert(`File "${file.name}" exceeds the 5MB size limit and will not be added.`);
-                    return;
-                }
-                dataTransfer.items.add(file);
-                let fileSize = (file.size / 1024 / 1024).toFixed(2);
-                let fileItem = document.createElement('div');
-                fileItem.className = 'd-flex justify-content-between align-items-center mb-1';
-                fileItem.innerHTML = `
-                    <span><i class="bi bi-file-earmark"></i> ${file.name} (${fileSize} MB)</span>
-                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeFile('${file.name}')">
-                        <i class="bi bi-x"></i>
-                    </button>
-                `;
-                fileList.appendChild(fileItem);
-            });
-            fileInput.files = dataTransfer.files;
-        }
-
-        // Add files to the file input and display list, enforcing size and duplicates
-        function handleFiles(files) {
-            let dataTransfer = new DataTransfer();
-            // Add existing files already in the input
-            Array.from(fileInput.files).forEach(f => dataTransfer.items.add(f));
-            // Add new files from drop or selection
-            Array.from(files).forEach(file => {
-                if (!fileAlreadyAdded(file)) {
-                    if (file.size > MAX_FILE_SIZE) {
-                        alert(`File "${file.name}" exceeds the 5MB size limit and will not be added.`);
-                        return;
-                    }
-                    dataTransfer.items.add(file);
-                    let fileSize = (file.size / 1024 / 1024).toFixed(2); // Convert to MB
-                    let fileItem = document.createElement('div');
-                    fileItem.className = 'd-flex justify-content-between align-items-center mb-1';
-                    fileItem.innerHTML = `
-                        <span><i class="bi bi-file-earmark"></i> ${file.name} (${fileSize} MB)</span>
-                        <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeFile('${file.name}')">
-                            <i class="bi bi-x"></i>
-                        </button>
-                    `;
-                    fileList.appendChild(fileItem);
-                }
-            });
-            fileInput.files = dataTransfer.files;
-        }
-
-        // Check if a file is already in the display list
-        function fileAlreadyAdded(file) {
-            return Array.from(fileList.children).some(item => item.textContent.includes(file.name));
-        }
-
-        // Remove a file from the file input and display list
-        function removeFile(fileName) {
-            let newFileList = Array.from(fileInput.files).filter(file => file.name !== fileName);
-            updateFileList(newFileList);
-
-            // Remove the file item from the display
-            let fileItems = fileList.children;
-            for (let i = 0; i < fileItems.length; i++) {
-                if (fileItems[i].textContent.includes(fileName)) {
-                    fileItems[i].remove();
-                    break;
-                }
-            }
-        }
-
-        // Update the file input with a new list of files
-        function updateFileList(newFileList) {
-            let dataTransfer = new DataTransfer();
-            newFileList.forEach(file => {
-                dataTransfer.items.add(file);
-            });
-            fileInput.files = dataTransfer.files;
-        }
-
-        // DOM elements for notification options and fields
-        const emailCheck = document.getElementById('emailCheck');
-        const phoneCheck = document.getElementById('phoneCheck');
-        const emailField = document.getElementById('emailField');
-        const phoneField = document.getElementById('phoneField');
-        const emailInput = document.getElementById('email');
-        const phoneInput = document.getElementById('phoneNumber');
-        const form = document.querySelector('form');
-
-        // Show/hide email field and set required attribute based on checkbox
-        emailCheck.addEventListener('change', function() {
-            emailField.style.display = this.checked ? 'block' : 'none';
-            emailInput.required = this.checked;
-        });
-
-        // Show/hide phone field and set required attribute based on checkbox
-        phoneCheck.addEventListener('change', function() {
-            phoneField.style.display = this.checked ? 'block' : 'none';
-            phoneInput.required = this.checked;
-        });
-
-        // Validate notification fields before form submission
-        form.addEventListener('submit', function(e) {
-            if (emailCheck.checked && emailInput.value.trim() === '') {
-                e.preventDefault();
-                alert('Please enter your email address for notifications.');
-            }
-            if (phoneCheck.checked && phoneInput.value.trim() === '') {
-                e.preventDefault();
-                alert('Please enter your phone number for notifications.');
-            }
-        });
-    </script>
-}
