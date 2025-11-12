@@ -180,15 +180,24 @@ namespace Municipality_Application.Services
                 reports = reports.Where(r => r.Description.Contains(searchTitle, StringComparison.OrdinalIgnoreCase));
 
             if (!string.IsNullOrWhiteSpace(searchArea))
+            {
+                var areaParts = searchArea.Split(',')
+                    .Select(p => p.Trim())
+                    .Where(p => !string.IsNullOrEmpty(p))
+                    .ToList();
+
                 reports = reports.Where(r =>
                     r.Address != null &&
-                    (
-                        (!string.IsNullOrEmpty(r.Address.Street) && r.Address.Street.Contains(searchArea, StringComparison.OrdinalIgnoreCase)) ||
-                        (!string.IsNullOrEmpty(r.Address.City) && r.Address.City.Contains(searchArea, StringComparison.OrdinalIgnoreCase)) ||
-                        (!string.IsNullOrEmpty(r.Address.Province) && r.Address.Province.Contains(searchArea, StringComparison.OrdinalIgnoreCase)) ||
-                        (!string.IsNullOrEmpty(r.Address.FormattedAddress) && r.Address.FormattedAddress.Contains(searchArea, StringComparison.OrdinalIgnoreCase))
+                    areaParts.All(part =>
+                        (!string.IsNullOrEmpty(r.Address.Street) && r.Address.Street.Contains(part, StringComparison.OrdinalIgnoreCase)) ||
+                        (!string.IsNullOrEmpty(r.Address.Suburb) && r.Address.Suburb.Contains(part, StringComparison.OrdinalIgnoreCase)) ||
+                        (!string.IsNullOrEmpty(r.Address.City) && r.Address.City.Contains(part, StringComparison.OrdinalIgnoreCase)) ||
+                        (!string.IsNullOrEmpty(r.Address.Province) && r.Address.Province.Contains(part, StringComparison.OrdinalIgnoreCase)) ||
+                        (!string.IsNullOrEmpty(r.Address.Country) && r.Address.Country.Contains(part, StringComparison.OrdinalIgnoreCase)) ||
+                        (!string.IsNullOrEmpty(r.Address.FormattedAddress) && r.Address.FormattedAddress.Contains(part, StringComparison.OrdinalIgnoreCase))
                     )
                 );
+            }
 
             if (startDate.HasValue)
                 reports = reports.Where(r => r.ReportedAt >= startDate.Value);
