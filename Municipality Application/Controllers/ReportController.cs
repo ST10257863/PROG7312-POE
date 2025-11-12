@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Municipality_Application.Interfaces;
-using Municipality_Application.Models;
 using Municipality_Application.Interfaces.Service;
 using Municipality_Application.Mappers;
 using Municipality_Application.ViewModels;
@@ -27,6 +26,12 @@ namespace Municipality_Application.Controllers
             {
                 Categories = categories
             };
+
+            // --- Heap-based prioritization for urgent requests ---
+            // This MinHeap structure supports O(log n) extraction of the most urgent unresolved requests.
+            var urgentReports = await _reportService.GetTopUrgentReportsAsync(5);
+            model.TopUrgentReports = urgentReports.Select(ReportMapper.ToViewModel).ToList();
+
             return View(model);
         }
 
@@ -94,6 +99,51 @@ namespace Municipality_Application.Controllers
             }
             var viewModel = ReportMapper.ToServiceRequestStatusViewModel(report);
             return View("ServiceRequestStatusInformation", viewModel);
+        }
+
+        /// <summary>
+        /// [BST] Returns all service requests sorted by CreatedDate using a Binary Search Tree (BST).
+        /// Demonstrates O(log n) search and efficient in-order retrieval.
+        /// </summary>
+        /// <returns>Sorted list of service requests.</returns>
+        [HttpGet]
+        [Route("Reports/TreeView")]
+        public async Task<IActionResult> TreeView()
+        {
+            var sortedReports = await _reportService.ListReportsSortedByDateAsync();
+            var viewModels = sortedReports.Select(ReportMapper.ToServiceRequestStatusViewModel).ToList();
+            return View("TreeView", viewModels);
+        }
+
+        /// <summary>
+        /// [MinHeap] Returns the top N most urgent service requests using a MinHeap (priority queue).
+        /// Demonstrates O(log n) extraction of the most urgent unresolved requests.
+        /// </summary>
+        /// <param name="count">Number of urgent requests to return (default 5).</param>
+        /// <returns>List of urgent service requests.</returns>
+        [HttpGet]
+        [Route("Reports/PriorityQueue")]
+        public async Task<IActionResult> PriorityQueue(int count = 5)
+        {
+            var urgentReports = await _reportService.GetTopUrgentReportsAsync(count);
+            var viewModels = urgentReports.Select(ReportMapper.ToServiceRequestStatusViewModel).ToList();
+            return View("PriorityQueue", viewModels);
+        }
+
+        /// <summary>
+        /// [Graph] Visualizes related service requests using a graph traversal (BFS/DFS).
+        /// Demonstrates adjacency list and traversal for finding related requests.
+        /// </summary>
+        /// <param name="id">The root request ID to visualize from.</param>
+        /// <returns>List of related service requests discovered via graph traversal.</returns>
+        [HttpGet]
+        [Route("Reports/GraphView/{id}")]
+        public async Task<IActionResult> GraphView(Guid id)
+        {
+            // Example: Use BFS to find related requests (e.g., by category, area, or other relation)
+            var relatedReports = await _reportService.GetRelatedRequestsByGraphAsync(id);
+            var viewModels = relatedReports.Select(ReportMapper.ToServiceRequestStatusViewModel).ToList();
+            return View("GraphView", viewModels);
         }
     }
 }

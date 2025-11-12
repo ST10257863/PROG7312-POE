@@ -1,4 +1,5 @@
-﻿using Municipality_Application.Models;
+﻿using Municipality_Application.Data.EF;
+using Municipality_Application.Models;
 
 namespace Municipality_Application.Interfaces
 {
@@ -41,5 +42,6 @@ namespace Municipality_Application.Interfaces
         /// <returns>True if the deletion was successful; otherwise, false.</returns>
         Task<bool> DeleteReportAsync(Guid id);
         Task<IEnumerable<Report>> GetFilteredReportsAsync(string? searchReportId, string? searchTitle, string? searchArea, DateTime? startDate, DateTime? endDate, int? categoryId, string? status);
+        Task<IEnumerable<EfReportRepository.ReportSummaryDto>> GetFilteredReportsSummaryAsync(string? searchReportId, string? searchTitle, string? searchArea, DateTime? startDate, DateTime? endDate, int? categoryId, string? status);
     }
 }

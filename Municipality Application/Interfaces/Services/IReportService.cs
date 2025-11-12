@@ -1,7 +1,11 @@
 ﻿using Municipality_Application.Models;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Municipality_Application.Interfaces.Service
 {
+    /// <summary>
+    /// Provides methods for managing and retrieving report data, including advanced data structure integrations.
+    /// </summary>
     public interface IReportService
     {
         /// <summary>
@@ -22,8 +26,9 @@ namespace Municipality_Application.Interfaces.Service
         /// <summary>
         /// Lists all reports.
         /// </summary>
+        /// <param name="forceRefresh">If true, forces a refresh from the data source; otherwise, may use cached data.</param>
         /// <returns>An enumerable collection of <see cref="Report"/> objects.</returns>
-        Task<IEnumerable<Report>> ListReportsAsync();
+        Task<IEnumerable<Report>> ListReportsAsync(bool forceRefresh = false);
 
         /// <summary>
         /// Modifies an existing report.
@@ -42,6 +47,7 @@ namespace Municipality_Application.Interfaces.Service
         /// <summary>
         /// Fetches a list of reports filtered by the specified criteria.
         /// </summary>
+        /// <param name="searchReportId">Optional: Filter by report ID (partial match).</param>
         /// <param name="searchTitle">Optional: Filter by report title (partial match).</param>
         /// <param name="searchArea">Optional: Filter by area, suburb, or city (partial match).</param>
         /// <param name="startDate">Optional: Filter for reports submitted on or after this date.</param>
@@ -49,6 +55,49 @@ namespace Municipality_Application.Interfaces.Service
         /// <param name="categoryId">Optional: Filter by category ID.</param>
         /// <param name="status">Optional: Filter by report status.</param>
         /// <returns>An enumerable collection of filtered <see cref="Report"/> objects.</returns>
-        Task<IEnumerable<Report>> ListReportsFilteredAsync(string? searchReportId, string? searchTitle, string? searchArea, DateTime? startDate, DateTime? endDate, int? categoryId, string? status);
+        Task<IEnumerable<Report>> ListReportsFilteredAsync(
+            string? searchReportId,
+            string? searchTitle,
+            string? searchArea,
+            DateTime? startDate,
+            DateTime? endDate,
+            int? categoryId,
+            string? status);
+
+        /// <summary>
+        /// Gets a list of status options for use in dropdowns, based on the <see cref="IssueStatus"/> enum.
+        /// </summary>
+        /// <returns>An enumerable collection of <see cref="SelectListItem"/> representing status options.</returns>
+        IEnumerable<SelectListItem> GetIssueStatusSelectList();
+
+        /// <summary>
+        /// [BST] Returns all reports sorted by ReportedAt using a Binary Search Tree (BST) for efficient O(log n) search and retrieval.
+        /// </summary>
+        /// <returns>Sorted list of reports.</returns>
+        Task<IEnumerable<Report>> ListReportsSortedByDateAsync();
+
+        /// <summary>
+        /// [BST] Searches reports in memory for those within the specified date range using a BST for O(log n) efficiency.
+        /// </summary>
+        /// <param name="start">Start of the date range (inclusive).</param>
+        /// <param name="end">End of the date range (inclusive).</param>
+        /// <returns>Reports within the date range.</returns>
+        Task<IEnumerable<Report>> SearchReportsByDateRangeAsync(DateTime start, DateTime end);
+
+        /// <summary>
+        /// [MinHeap] Returns the top N most urgent unresolved reports using a MinHeap for prioritization.
+        /// Demonstrates O(log n) extraction of the most urgent unresolved requests.
+        /// </summary>
+        /// <param name="count">Number of urgent reports to return.</param>
+        /// <returns>List of urgent reports.</returns>
+        Task<IEnumerable<Report>> GetTopUrgentReportsAsync(int count = 5);
+
+        /// <summary>
+        /// [Graph] Demonstrates graph traversal by finding related service requests using BFS from the given root request.
+        /// Builds a graph where each node is a report, and edges connect reports with the same category.
+        /// </summary>
+        /// <param name="rootId">The root report ID to start traversal from.</param>
+        /// <returns>All related reports discovered via BFS traversal.</returns>
+        Task<IEnumerable<Report>> GetRelatedRequestsByGraphAsync(Guid rootId);
     }
 }

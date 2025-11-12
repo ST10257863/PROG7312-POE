@@ -1,6 +1,8 @@
 ﻿using Municipality_Application.Interfaces;
 using Municipality_Application.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using System.Diagnostics;
 
 namespace Municipality_Application.Data.EF
 {
@@ -10,14 +12,17 @@ namespace Municipality_Application.Data.EF
     public class EfReportRepository : IReportRepository
     {
         private readonly AppDbContext _dbContext;
+        private readonly ILogger<EfReportRepository> _logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EfReportRepository"/> class.
         /// </summary>
         /// <param name="dbContext">The application's database context.</param>
-        public EfReportRepository(AppDbContext dbContext)
+        /// <param name="logger">The logger for performance instrumentation.</param>
+        public EfReportRepository(AppDbContext dbContext, ILogger<EfReportRepository> logger)
         {
             _dbContext = dbContext;
+            _logger = logger;
         }
 
         /// <summary>
@@ -170,6 +175,8 @@ namespace Municipality_Application.Data.EF
             int? categoryId,
             string? status)
         {
+            var stopwatch = Stopwatch.StartNew();
+
             var query = _dbContext.Reports
                 .AsNoTracking()
                 .Include(r => r.Attachments)
@@ -215,7 +222,102 @@ namespace Municipality_Application.Data.EF
             if (!string.IsNullOrWhiteSpace(status) && Enum.TryParse<IssueStatus>(status, out var parsedStatus))
                 query = query.Where(r => r.Status == parsedStatus);
 
-            return await query.OrderByDescending(r => r.ReportedAt).ToListAsync();
+            var result = await query.OrderByDescending(r => r.ReportedAt).ToListAsync();
+
+            stopwatch.Stop();
+            _logger.LogInformation("GetFilteredReportsAsync executed in {Elapsed} ms", stopwatch.ElapsedMilliseconds);
+
+            return result;
+        }
+
+        /// <summary>
+        /// Retrieves filtered reports from the database as lightweight DTOs (ReportSummaryDto) using projection.
+        /// Only fetches necessary columns for summary views.
+        /// </summary>
+        public async Task<IEnumerable<ReportSummaryDto>> GetFilteredReportsSummaryAsync(
+            string? searchReportId,
+            string? searchTitle,
+            string? searchArea,
+            DateTime? startDate,
+            DateTime? endDate,
+            int? categoryId,
+            string? status)
+        {
+            var stopwatch = Stopwatch.StartNew();
+
+            var query = _dbContext.Reports
+                .AsNoTracking()
+                .Include(r => r.Category)
+                .Include(r => r.Address)
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(searchReportId))
+            {
+                if (Guid.TryParse(searchReportId, out var reportGuid))
+                {
+                    query = query.Where(r => r.Id == reportGuid);
+                }
+                else
+                {
+                    query = query.Where(r => r.Id.ToString().Contains(searchReportId));
+                }
+            }
+
+            if (!string.IsNullOrWhiteSpace(searchTitle))
+                query = query.Where(r => r.Description.Contains(searchTitle));
+
+            if (!string.IsNullOrWhiteSpace(searchArea))
+                query = query.Where(r =>
+                    r.Address != null &&
+                    (
+                        (r.Address.Street != null && r.Address.Street.Contains(searchArea)) ||
+                        (r.Address.City != null && r.Address.City.Contains(searchArea)) ||
+                        (r.Address.Province != null && r.Address.Province.Contains(searchArea)) ||
+                        (r.Address.FormattedAddress != null && r.Address.FormattedAddress.Contains(searchArea))
+                    )
+                );
+
+            if (startDate.HasValue)
+                query = query.Where(r => r.ReportedAt >= startDate.Value);
+            if (endDate.HasValue)
+                query = query.Where(r => r.ReportedAt <= endDate.Value);
+
+            if (categoryId.HasValue)
+                query = query.Where(r => r.CategoryId == categoryId.Value);
+
+            if (!string.IsNullOrWhiteSpace(status) && Enum.TryParse<IssueStatus>(status, out var parsedStatus))
+                query = query.Where(r => r.Status == parsedStatus);
+
+            var result = await query
+                .OrderByDescending(r => r.ReportedAt)
+                .Select(r => new ReportSummaryDto
+                {
+                    Id = r.Id,
+                    Description = r.Description,
+                    CategoryName = r.Category != null ? r.Category.Name : string.Empty,
+                    AddressFormatted = r.Address != null ? r.Address.FormattedAddress : string.Empty,
+                    ReportedAt = r.ReportedAt,
+                    Status = r.Status
+                })
+                .ToListAsync();
+
+            stopwatch.Stop();
+            _logger.LogInformation("GetFilteredReportsSummaryAsync executed in {Elapsed} ms", stopwatch.ElapsedMilliseconds);
+
+            return result;
+        }
+
+        /// <summary>
+        /// Lightweight DTO for report summary projection.
+        /// </summary>
+        public class ReportSummaryDto
+        {
+            public Guid Id { get; set; }
+            public string Description { get; set; } = string.Empty;
+            public string CategoryName { get; set; } = string.Empty;
+            public string AddressFormatted { get; set; } = string.Empty;
+            public DateTime ReportedAt { get; set; }
+            public IssueStatus Status { get; set; }
         }
     }
 }

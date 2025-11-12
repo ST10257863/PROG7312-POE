@@ -2,7 +2,6 @@ using System.Globalization;
 using Microsoft.EntityFrameworkCore;
 using Municipality_Application.Data;
 using Municipality_Application.Data.EF;
-using Municipality_Application.Data.InMemory;
 using Municipality_Application.Interfaces;
 using Municipality_Application.Interfaces.Service;
 using Municipality_Application.Services;
@@ -17,11 +16,7 @@ bool useInMemory = false; // Set to true for in-memory mode
 
 if (useInMemory)
 {
-    // In-memory repositories (data lost on restart)
-    builder.Services.AddSingleton<IEventRepository, InMemoryEventRepository>();
-    builder.Services.AddSingleton<IReportRepository, InMemoryReportRepository>();
-    builder.Services.AddSingleton<ICategoryRepository, InMemoryCategoryRepository>();
-    builder.Services.AddSingleton<InMemoryDataSeeder>();
+    //Removed in place of database persistence
 }
 else
 {
@@ -33,7 +28,7 @@ else
     builder.Services.AddScoped<ICategoryRepository, EfCategoryRepository>();
     builder.Services.AddScoped<EFDataSeeder>();
 }
-
+builder.Services.AddHostedService<ReportPreloadBackgroundService>();
 builder.Services.AddScoped<IEventService, EventService>();
 builder.Services.AddScoped<IReportService, ReportService>();
 
@@ -61,8 +56,7 @@ using (var scope = app.Services.CreateScope())
 {
     if (useInMemory)
     {
-        var seeder = scope.ServiceProvider.GetRequiredService<InMemoryDataSeeder>();
-        await seeder.SeedAllAsync();
+        // Removed in place of database persistence
     }
     else
     {

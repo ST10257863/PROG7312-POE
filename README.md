@@ -9,26 +9,61 @@ This application is a municipal issue reporting system built with ASP.NET Core R
 - **Attachments:** Users can upload images or documents related to their report.
 - **Google Maps Places Autocomplete:** The address field in the report form uses Google Maps Places Autocomplete to help users quickly and accurately enter their location. Suggestions are restricted to geocoded locations within South Africa.
 
+## Integration of Data Structures
+
+### Summary of Implemented Structures
+
+- **Binary Search Tree (BST):**
+  - Used to index and retrieve service requests sorted by their creation date.
+  - Enables efficient O(log n) search and in-order traversal for sorted display.
+  - **Example call site:**  
+    `GET /Reports/TreeView` in `ReportController` calls `ListReportsSortedByDateAsync()` in `ReportService`.
+
+- **MinHeap (Priority Queue):**
+  - Used to prioritize unresolved or urgent service requests by their priority level.
+  - Supports O(log n) insertion and extraction of the most urgent request.
+  - **Example call site:**  
+    `GET /Reports/PriorityQueue` in `ReportController` calls `GetTopUrgentReportsAsync()` in `ReportService`.
+
+- **Graph (Adjacency List):**
+  - Used to model relationships between service requests (e.g., by category).
+  - Enables efficient traversal (BFS/DFS) to find related requests.
+  - **Example call site:**  
+    `GET /Reports/GraphView/{id}` in `ReportController` calls `GetRelatedRequestsByGraphAsync()` in `ReportService`.
+
+### Role in Service Request Status Feature
+
+- **Tree:**  
+  Provides fast, sorted access to service requests, allowing users and staff to view requests in chronological order or search by date range efficiently.
+
+- **Heap:**  
+  Ensures that the most urgent or unresolved requests are surfaced quickly, supporting escalation and prioritization workflows.
+
+- **Graph:**  
+  Allows visualization and discovery of related or dependent requests, such as issues in the same category or area, supporting better decision-making and resource allocation.
+
+### Time Complexity Improvements
+
+- **Binary Search Tree:**  
+  - Lookup, insertion, and deletion: O(log n) (on average, for balanced trees)
+  - In-order traversal: O(n)
+- **MinHeap:**  
+  - Insertion: O(log n)
+  - ExtractMin (get most urgent): O(log n)
+- **Graph (BFS/DFS):**  
+  - Traversal: O(V + E), where V = number of vertices (requests), E = number of edges (relationships)
+
+---
+
 ## Data Storage Implementation
 
-### Switching Between In-Memory and Database Storage
-You can easily switch between in-memory and database-backed storage by commenting or uncommenting specific lines in [`Program.cs`] see lines 15-23 in [`Program.cs`] for directions on how to switch between the two storage implementations.
-This allows you to choose the storage mode that best fits your needs for development or production.
-
-### Previous: In-Memory Storage
-Initially, the application used an in-memory repository (`InMemoryReportRepository`) to store reports and attachments. All data was kept in server memory and lost when the application restarted. Attachments were stored as base64-encoded strings, and all report data was managed using thread-safe collections.
-
-- **Reports and Attachments:** Stored in `ConcurrentDictionary` objects.
-- **Attachments:** Uploaded files were converted to base64 strings and associated with their reports.
-- **No Persistence:** Data was not saved to disk or a database; it was only available during the application's runtime.
-
-### Current: Database Storage with Entity Framework Core
-The application now uses a database-backed repository for data persistence. All reports, attachments, categories, and users are stored in a SQL database via Entity Framework Core (`AppDbContext`). This ensures that data survives application restarts and supports scalability.
+### Database Storage with Entity Framework Core
+The application uses a database-backed repository for data persistence. All reports, attachments, categories, and users are stored in a SQL database via Entity Framework Core (`AppDbContext`). This ensures that data survives application restarts and supports scalability.
 
 - **Persistence:** Data is saved in a relational database and remains available after restarts.
 - **EF Core:** The repository implementation uses `AppDbContext` for all CRUD operations.
 - **Attachments:** Uploaded files are stored in the database and associated with their reports.
-- **Production-Ready:** The application is now suitable for real-world use with robust data storage.
+- **Production-Ready:** The application is suitable for real-world use with robust data storage.
 
 ### Database Setup: Using LocalDB
 
@@ -88,4 +123,40 @@ To enable the address autocomplete feature, you must provide a Google Maps API k
 
 ---
 
-**Note:** You can switch between in-memory and database storage by editing the service registrations in [`Program.cs`]. All data is persistent when using the database option.
+**Note:** All data is persistent when using the database option.
+
+---
+
+## Implementation Report
+
+### Why These Structures Were Chosen
+
+- **Tree (BST):**  
+  Enables fast, sorted access to service requests by date, supporting efficient range queries and chronological views.
+- **Heap (MinHeap):**  
+  Allows urgent or unresolved requests to be prioritized and surfaced quickly, which is essential for escalation and response workflows.
+- **Graph:**  
+  Models relationships between requests (e.g., by category or area), enabling discovery of dependencies and related issues for better resource allocation.
+
+### How They Improved Efficiency and Maintainability
+
+- **Efficiency:**  
+  - Tree and heap structures reduce the time complexity of common operations (search, sort, prioritization) from O(n log n) or O(n) to O(log n) for insertion and retrieval.
+  - Graph traversal enables O(V + E) discovery of related requests, which is much faster than repeated linear scans.
+- **Maintainability:**  
+  - Encapsulating these algorithms in reusable classes (BST, MinHeap, Graph) keeps the codebase modular and testable.
+  - Service and controller methods clearly indicate where each structure is used, making the code easy to understand and extend.
+
+### Example Usage
+
+- **Heap Prioritizing Urgent Requests:**  
+  The `GetTopUrgentReportsAsync` method in `ReportService` uses a MinHeap to extract the top 5 most urgent unresolved requests.  
+  Example endpoint: `GET /Reports/PriorityQueue`
+
+- **Graph Showing Related Service Dependencies:**  
+  The `GetRelatedRequestsByGraphAsync` method builds a graph of reports connected by category and uses BFS to find all related requests.  
+  Example endpoint: `GET /Reports/GraphView/{id}`
+
+- **Tree for Sorted Results:**  
+  The `ListReportsSortedByDateAsync` method uses a BST to return all reports sorted by creation date.  
+  Example endpoint: `GET /Reports/TreeView`
