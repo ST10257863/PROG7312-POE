@@ -37,9 +37,9 @@ namespace Municipality_Application.Controllers
         #region Report Creation
 
         /// <summary>
-        /// Displays the report creation page and shows the top urgent reports.
+        /// Displays the report creation page
         /// </summary>
-        /// <returns>The report creation view with categories and urgent reports.</returns>
+        /// <returns>The report creation view with categories</returns>
         public async Task<IActionResult> Index()
         {
             // Get all categories for the dropdown
@@ -48,10 +48,6 @@ namespace Municipality_Application.Controllers
             {
                 Categories = categories
             };
-
-            // Get the most urgent reports for display
-            var urgentReports = await _reportService.GetTopUrgentReportsAsync(5);
-            model.TopUrgentReports = urgentReports.Select(ReportMapper.ToViewModel).ToList();
 
             // Show the main report creation page
             return View(model);

@@ -214,7 +214,10 @@ namespace Municipality_Application.Data.EF
             if (startDate.HasValue)
                 query = query.Where(r => r.ReportedAt >= startDate.Value);
             if (endDate.HasValue)
-                query = query.Where(r => r.ReportedAt <= endDate.Value);
+            {
+                var nextDay = endDate.Value.Date.AddDays(1);
+                query = query.Where(r => r.ReportedAt < nextDay);
+            }
 
             if (categoryId.HasValue)
                 query = query.Where(r => r.CategoryId == categoryId.Value);

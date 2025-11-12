@@ -95,7 +95,6 @@ The BST is used to keep reports sorted by their creation date (`ReportedAt`). Th
 
 **Example:**
 ~~~
-{
 // In ReportService 
 public async Task<IEnumerable<Report>> ListReportsSortedByDateAsync() 
 { 

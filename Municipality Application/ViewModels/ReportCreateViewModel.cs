@@ -18,6 +18,5 @@ namespace Municipality_Application.ViewModels
         public string? Email { get; set; }
         public List<IFormFile>? Files { get; set; }
         public IEnumerable<Category>? Categories { get; set; }
-        public List<ServiceRequestStatusViewModel> TopUrgentReports { get; internal set; } = new();
     }
 }

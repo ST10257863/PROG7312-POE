@@ -166,7 +166,10 @@ namespace Municipality_Application.Services
             if (startDate.HasValue)
                 reports = reports.Where(r => r.ReportedAt >= startDate.Value);
             if (endDate.HasValue)
-                reports = reports.Where(r => r.ReportedAt <= endDate.Value);
+            {
+                var nextDay = endDate.Value.Date.AddDays(1);
+                reports = reports.Where(r => r.ReportedAt < nextDay);
+            }
 
             // Filter by category
             if (categoryId.HasValue)
@@ -181,7 +184,8 @@ namespace Municipality_Application.Services
             {
                 var filtered = _reportBst.InOrderTraversal()
                     .Select(w => w.Report)
-                    .Where(r => reports.Any(x => x.Id == r.Id));
+                    .Where(r => reports.Any(x => x.Id == r.Id))
+                    .Reverse();
                 return filtered;
             }
 

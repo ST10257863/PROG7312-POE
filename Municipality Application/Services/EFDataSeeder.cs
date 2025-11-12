@@ -165,6 +165,9 @@ namespace Municipality_Application.Services
                     var address = addresses[_random.Next(addresses.Count)];
                     var category = categories[_random.Next(categories.Count)];
                     var reportedDate = DateTime.UtcNow.AddDays(_random.Next(-60, 30));
+                    if (reportedDate > DateTime.UtcNow)
+                        reportedDate = DateTime.UtcNow;
+
                     var status = (IssueStatus)_random.Next(Enum.GetValues(typeof(IssueStatus)).Length);
 
                     reports.Add(new Report
