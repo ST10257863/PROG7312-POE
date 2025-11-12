@@ -7,9 +7,10 @@ This application is a municipal issue reporting system built with ASP.NET Core R
 ---
 
 ## Links
-###YouTube:
+### YouTube:
 https://youtu.be/akqc3MoWmco
-###Github:
+
+### Github:
 https://github.com/VCCT-PROG7312-2025-G3/PROG7312-POE-ST10257863
 
 ---
