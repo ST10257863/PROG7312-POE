@@ -6,6 +6,14 @@ This application is a municipal issue reporting system built with ASP.NET Core R
 
 ---
 
+## Links
+###YouTube:
+https://youtu.be/akqc3MoWmco
+###Github:
+https://github.com/VCCT-PROG7312-2025-G3/PROG7312-POE-ST10257863
+
+---
+
 ## How to Compile and Run
 
 ### Prerequisites
@@ -212,4 +220,4 @@ public async Task<IEnumerable<Report>> GetRelatedRequestsByGraphAsync(Guid rootI
 
 This project demonstrates how classic data structures (BST, MinHeap, Graph) can be used in a real-world web application to make searching, sorting, prioritizing, and visualizing data much more efficient. The code is modular, well-documented, and designed for both maintainability and performance.
 
-If you want to see these structures in action, try the "Service Request Status" features in the app—especially the Tree View, Priority Queue, and Graph View!
+If you want to see these structures in action, try the "Service Request Status" features in the appÂ—especially the Tree View, Priority Queue, and Graph View!
